@@ -12,7 +12,7 @@ export default function DashboardPage() {
     Cookies.remove('token');
     localStorage.removeItem('user');
     toast.success('Logged out successfully');
-    router.push('/login');
+    router.push('/auth/login');
   };
 
   return (

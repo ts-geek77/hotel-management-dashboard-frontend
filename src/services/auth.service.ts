@@ -1,4 +1,4 @@
-import { LoginResponse, RegisterResponse } from '../types/auth';
+import { LoginResponse, RegisterResponse, ForgotPasswordResponse } from '../types/auth';
 import apiClient from './api-client';
 
 const authService = {
@@ -17,6 +17,15 @@ const authService = {
       return response.data;
     } catch (error) {
        console.error("Register Error: ", error);
+       throw error;
+    }
+  },
+  forgotPassword: async (data: any): Promise<ForgotPasswordResponse> => {
+    try {
+      const response = await apiClient.post<ForgotPasswordResponse>('/auth/forgot-password', data);
+      return response.data;
+    } catch (error) {
+       console.error("Forgot Password Error: ", error);
        throw error;
     }
   },

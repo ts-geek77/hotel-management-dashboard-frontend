@@ -5,33 +5,28 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import useForm from "@/hooks/useForm";
-import { Building2, Loader2 } from "lucide-react";
+import { Building2, Loader2, ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import * as Yup from "yup";
 import authService from "@/services/auth.service";
 import Link from "next/link";
 
-const registerSchema = Yup.object().shape({
-  name: Yup.string()
-    .min(2, "Name is too short")
-    .required("Full name is required"),
+const forgotPasswordSchema = Yup.object().shape({
   email: Yup.string()
-    .email("Invalid email address")
+    .email("Invalid email format")
     .required("Email is required"),
-  phone: Yup.string()
-    .required("Phone number is required"),
-  password: Yup.string()
-    .min(6, "Password must be at least 6 characters")
+  newPassword: Yup.string()
+    .min(6, "New password must be at least 6 characters")
     .required("Password is required"),
   confirmPassword: Yup.string()
-    .oneOf([Yup.ref("password")], "Passwords must match")
+    .oneOf([Yup.ref("newPassword")], "Passwords don't match")
     .required("Confirm your password"),
 });
 
-type RegisterInput = Yup.InferType<typeof registerSchema>;
+type ForgotPasswordInput = Yup.InferType<typeof forgotPasswordSchema>;
 
-const RegisterPage = () => {
+const ForgotPasswordPage = () => {
   const router = useRouter();
 
   const {
@@ -39,34 +34,35 @@ const RegisterPage = () => {
     errors,
     touched,
     formError,
+    formSuccess,
     isSubmitting,
     handleChange,
     handleBlur,
     handleSubmit,
-  } = useForm<RegisterInput>({
+    setFormSuccess,
+  } = useForm<ForgotPasswordInput>({
     initialValues: {
-      name: "",
       email: "",
-      phone: "",
-      password: "",
+      newPassword: "",
       confirmPassword: "",
     },
-    schema: registerSchema,
+    schema: forgotPasswordSchema,
     onSubmit: async (data) => {
       try {
-        await authService.register(data);
-        toast.success("Account created successfully. Please login.");
-        router.push("/auth/login");
+        const res = await authService.forgotPassword(data);
+        setFormSuccess(res.message || "Password has been reset successfully.");
+        toast.success("Password reset successfully!");
+        setTimeout(() => router.push("/auth/login"), 2000);
       } catch (err: any) {
         const message =
-          err?.response?.data?.message || err.message || "Registration failed";
+          err?.response?.data?.message || err.message || "Failed to reset password";
         throw new Error(message);
       }
     },
   });
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-zinc-50 px-4 py-12">
+    <main className="flex min-h-screen items-center justify-center bg-zinc-50 px-4">
       <div className="w-full max-w-sm">
         <Link 
           href="/auth/login"
@@ -77,10 +73,10 @@ const RegisterPage = () => {
 
         <div className="mb-8 text-center">
           <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">
-            Create an Account
+            Forgot Password?
           </h1>
           <p className="mt-1 text-sm text-zinc-500">
-            Join Hotel Admin to start managing your operations
+            Enter your details below to reset your password
           </p>
         </div>
 
@@ -97,31 +93,15 @@ const RegisterPage = () => {
                 </div>
               )}
 
-              {/* Name */}
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor="name">Full Name</Label>
-                <Input
-                  id="name"
-                  type="text"
-                  name="name"
-                  placeholder="John Doe"
-                  value={values.name}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  className={
-                    touched.name && errors.name
-                      ? "border-red-400 focus-visible:ring-red-300"
-                      : ""
-                  }
-                />
-                {touched.name && errors.name && (
-                  <p className="text-xs text-red-500">{errors.name}</p>
-                )}
-              </div>
+              {formSuccess && (
+                <div className="rounded-md bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-600">
+                  {formSuccess}
+                </div>
+              )}
 
               {/* Email */}
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">Email Address</Label>
                 <Input
                   id="email"
                   type="email"
@@ -142,48 +122,26 @@ const RegisterPage = () => {
                 )}
               </div>
 
-              {/* Phone */}
+              {/* New Password */}
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="phone">Phone Number</Label>
+                <Label htmlFor="newPassword">New Password</Label>
                 <Input
-                  id="phone"
-                  type="tel"
-                  name="phone"
-                  placeholder="1234567890"
-                  value={values.phone}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  className={
-                    touched.phone && errors.phone
-                      ? "border-red-400 focus-visible:ring-red-300"
-                      : ""
-                  }
-                />
-                {touched.phone && errors.phone && (
-                  <p className="text-xs text-red-500">{errors.phone}</p>
-                )}
-              </div>
-
-              {/* Password */}
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
+                  id="newPassword"
                   type="password"
-                  name="password"
+                  name="newPassword"
                   placeholder="••••••••"
-                  value={values.password}
+                  value={values.newPassword}
                   onChange={handleChange}
                   onBlur={handleBlur}
                   autoComplete="new-password"
                   className={
-                    touched.password && errors.password
+                    touched.newPassword && errors.newPassword
                       ? "border-red-400 focus-visible:ring-red-300"
                       : ""
                   }
                 />
-                {touched.password && errors.password && (
-                  <p className="text-xs text-red-500">{errors.password}</p>
+                {touched.newPassword && errors.newPassword && (
+                  <p className="text-xs text-red-500">{errors.newPassword}</p>
                 )}
               </div>
 
@@ -220,20 +178,20 @@ const RegisterPage = () => {
                 {isSubmitting ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Creating account…
+                    Resetting password…
                   </>
                 ) : (
-                  "Register"
+                  "Reset Password"
                 )}
               </Button>
 
-              <div className="text-center text-sm text-zinc-500">
-                Already have an account?{" "}
+              <div className="text-center">
                 <Link
                   href="/auth/login"
-                  className="font-medium text-teal-600 hover:text-teal-700 hover:underline"
+                  className="inline-flex items-center gap-2 text-sm font-medium text-zinc-500 hover:text-teal-600 transition-colors"
                 >
-                  Login
+                  <ArrowLeft size={16} />
+                  Back to Login
                 </Link>
               </div>
             </form>
@@ -244,4 +202,4 @@ const RegisterPage = () => {
   );
 };
 
-export default RegisterPage;
+export default ForgotPasswordPage;

@@ -22,3 +22,7 @@ export interface RegisterResponse {
     name: string;
   };
 }
+
+export interface ForgotPasswordResponse {
+  message: string;
+}
