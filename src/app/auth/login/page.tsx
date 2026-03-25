@@ -44,7 +44,7 @@ const LoginPage = () => {
         const res = await authService.login(data);
         Cookies.set("token", res.token, { expires: 1 });
         toast.success("Logged in successfully");
-        router.push("/dashboard");
+        router.push("/dashboards/dashboard");
       } catch (err: any) {
         const message =
           err?.response?.data?.message || err.message || "Login failed";

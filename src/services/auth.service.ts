@@ -29,6 +29,46 @@ const authService = {
        throw error;
     }
   },
+  getProfile: async (): Promise<LoginResponse['user']> => {
+    try {
+      const response = await apiClient.get<any>('/auth/profile');
+      return response.data.user || response.data;
+    } catch (error) {
+      console.error("Get Profile Error: ", error);
+      throw error;
+    }
+  },
+  updateProfile: async (data: any): Promise<any> => {
+    try {
+      const response = await apiClient.put('/auth/profile', data);
+      return response.data;
+    } catch (error) {
+      console.error("Update Profile Error: ", error);
+      throw error;
+    }
+  },
+  uploadImage: async (formData: FormData): Promise<any> => {
+    try {
+      const response = await apiClient.post('/auth/upload-image', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Upload Image Error: ", error);
+      throw error;
+    }
+  },
+  changePassword: async (data: any): Promise<any> => {
+    try {
+      const response = await apiClient.put('/auth/change-password', data);
+      return response.data;
+    } catch (error) {
+      console.error("Change Password Error: ", error);
+      throw error;
+    }
+  },
 };
 
 export default authService;
