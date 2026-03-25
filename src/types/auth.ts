@@ -13,3 +13,12 @@ export interface AuthState {
   token: string | null;
   isAuthenticated: boolean;
 }
+
+export interface RegisterResponse {
+  message: string;
+  user: {
+    id: string;
+    email: string;
+    name: string;
+  };
+}

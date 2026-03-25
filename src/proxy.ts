@@ -3,11 +3,11 @@ import type { NextRequest } from 'next/server';
 
 export function proxy(request: NextRequest) {
   const token = request.cookies.get('token')?.value;
-  const isAuthPage = request.nextUrl.pathname === '/login';
+  const isAuthPage = request.nextUrl.pathname.startsWith('/auth');
 
   if (!token && !isAuthPage) {
     if (request.nextUrl.pathname.startsWith('/dashboard')) {
-       return NextResponse.redirect(new URL('/login', request.url));
+       return NextResponse.redirect(new URL('/auth/login', request.url));
     }
   }
 
@@ -19,5 +19,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/login'],
+  matcher: ['/dashboard/:path*', '/auth/:path*'],
 };
