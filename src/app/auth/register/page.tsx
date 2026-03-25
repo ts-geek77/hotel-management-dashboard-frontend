@@ -97,7 +97,6 @@ const RegisterPage = () => {
                 </div>
               )}
 
-              {/* Name */}
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="name">Full Name</Label>
                 <Input
@@ -119,7 +118,6 @@ const RegisterPage = () => {
                 )}
               </div>
 
-              {/* Email */}
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -142,7 +140,6 @@ const RegisterPage = () => {
                 )}
               </div>
 
-              {/* Phone */}
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="phone">Phone Number</Label>
                 <Input
@@ -164,7 +161,6 @@ const RegisterPage = () => {
                 )}
               </div>
 
-              {/* Password */}
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="password">Password</Label>
                 <Input
@@ -187,7 +183,6 @@ const RegisterPage = () => {
                 )}
               </div>
 
-              {/* Confirm Password */}
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="confirmPassword">Confirm Password</Label>
                 <Input

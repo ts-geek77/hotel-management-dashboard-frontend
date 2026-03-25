@@ -99,7 +99,6 @@ const ForgotPasswordPage = () => {
                 </div>
               )}
 
-              {/* Email */}
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="email">Email Address</Label>
                 <Input
@@ -122,7 +121,6 @@ const ForgotPasswordPage = () => {
                 )}
               </div>
 
-              {/* New Password */}
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="newPassword">New Password</Label>
                 <Input
@@ -145,7 +143,6 @@ const ForgotPasswordPage = () => {
                 )}
               </div>
 
-              {/* Confirm Password */}
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="confirmPassword">Confirm Password</Label>
                 <Input
