@@ -83,7 +83,7 @@ const Navbar = () => {
               </div>
             </DropdownMenuTrigger>
 
-            <DropdownMenuContent align="end" className="w-56 mt-2 p-1 border-[var(--border)] shadow-lg">
+            <DropdownMenuContent align="end" className="w-56 mt-2 p-1 border-[var(--border)] shadow-lg z-50 bg-white dark:bg-zinc-900">
               <div className="px-3 py-2 border-b border-[var(--border-subtle)] mb-1">
                 <p className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider">My Account</p>
               </div>
@@ -97,7 +97,7 @@ const Navbar = () => {
               <DropdownMenuSeparator className="bg-[var(--border-subtle)]" />
               <DropdownMenuItem
                 onClick={handleLogOut}
-                className="gap-2 py-2.5 px-3 text-red-600 focus:text-red-700 focus:bg-red-50 cursor-pointer rounded-md"
+                className="gap-2 py-2.5 px-3 text-[var(--destructive)] focus:text-[var(--destructive-hover)] focus:bg-red-50 cursor-pointer rounded-md"
               >
                 <LogOut className="h-4 w-4" />
                 <span className="font-medium">Logout</span>
