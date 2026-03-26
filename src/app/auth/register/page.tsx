@@ -66,25 +66,26 @@ const RegisterPage = () => {
   });
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-zinc-50 px-4 py-12">
+    <main className="flex min-h-screen items-center justify-center px-4 py-12" style={{ backgroundColor: "var(--surface-muted)" }}>
       <div className="w-full max-w-sm">
         <Link 
           href="/auth/login"
-          className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-teal-600 transition-transform hover:scale-105"
+          className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl transition-transform hover:scale-105"
+          style={{ backgroundColor: "var(--brand)" }}
         >
           <Building2 size={32} color="white" />
         </Link>
 
         <div className="mb-8 text-center">
-          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">
+          <h1 className="text-2xl font-semibold tracking-tight" style={{ color: "var(--text-primary)" }}>
             Create an Account
           </h1>
-          <p className="mt-1 text-sm text-zinc-500">
+          <p className="mt-1 text-sm" style={{ color: "var(--text-label)" }}>
             Join Hotel Admin to start managing your operations
           </p>
         </div>
 
-        <Card className="border-zinc-200 shadow-sm">
+        <Card className="shadow-sm" style={{ borderColor: "var(--border)" }}>
           <CardContent className="p-8">
             <form
               onSubmit={handleSubmit}
@@ -92,7 +93,7 @@ const RegisterPage = () => {
               autoComplete="off"
             >
               {formError && (
-                <div className="rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600">
+                <div className="rounded-md px-4 py-3 text-sm" style={{ backgroundColor: "var(--error-bg)", border: "1px solid var(--error-border)", color: "var(--error)" }}>
                   {formError}
                 </div>
               )}
@@ -107,11 +108,7 @@ const RegisterPage = () => {
                   value={values.name}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  className={
-                    touched.name && errors.name
-                      ? "border-red-400 focus-visible:ring-red-300"
-                      : ""
-                  }
+                  className={touched.name && errors.name ? "border-red-400 focus-visible:ring-red-300" : ""}
                 />
                 {touched.name && errors.name && (
                   <p className="text-xs text-red-500">{errors.name}</p>
@@ -129,11 +126,7 @@ const RegisterPage = () => {
                   onChange={handleChange}
                   onBlur={handleBlur}
                   autoComplete="off"
-                  className={
-                    touched.email && errors.email
-                      ? "border-red-400 focus-visible:ring-red-300"
-                      : ""
-                  }
+                  className={touched.email && errors.email ? "border-red-400 focus-visible:ring-red-300" : ""}
                 />
                 {touched.email && errors.email && (
                   <p className="text-xs text-red-500">{errors.email}</p>
@@ -150,11 +143,7 @@ const RegisterPage = () => {
                   value={values.phone}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  className={
-                    touched.phone && errors.phone
-                      ? "border-red-400 focus-visible:ring-red-300"
-                      : ""
-                  }
+                  className={touched.phone && errors.phone ? "border-red-400 focus-visible:ring-red-300" : ""}
                 />
                 {touched.phone && errors.phone && (
                   <p className="text-xs text-red-500">{errors.phone}</p>
@@ -172,11 +161,7 @@ const RegisterPage = () => {
                   onChange={handleChange}
                   onBlur={handleBlur}
                   autoComplete="new-password"
-                  className={
-                    touched.password && errors.password
-                      ? "border-red-400 focus-visible:ring-red-300"
-                      : ""
-                  }
+                  className={touched.password && errors.password ? "border-red-400 focus-visible:ring-red-300" : ""}
                 />
                 {touched.password && errors.password && (
                   <p className="text-xs text-red-500">{errors.password}</p>
@@ -194,11 +179,7 @@ const RegisterPage = () => {
                   onChange={handleChange}
                   onBlur={handleBlur}
                   autoComplete="new-password"
-                  className={
-                    touched.confirmPassword && errors.confirmPassword
-                      ? "border-red-400 focus-visible:ring-red-300"
-                      : ""
-                  }
+                  className={touched.confirmPassword && errors.confirmPassword ? "border-red-400 focus-visible:ring-red-300" : ""}
                 />
                 {touched.confirmPassword && errors.confirmPassword && (
                   <p className="text-xs text-red-500">
@@ -210,7 +191,10 @@ const RegisterPage = () => {
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="mt-1 w-full bg-teal-600 hover:bg-teal-700 text-white cursor-pointer"
+                className="mt-1 w-full text-white cursor-pointer"
+                style={{ backgroundColor: "var(--brand)" }}
+                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--brand-hover)")}
+                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "var(--brand)")}
               >
                 {isSubmitting ? (
                   <>
@@ -222,11 +206,12 @@ const RegisterPage = () => {
                 )}
               </Button>
 
-              <div className="text-center text-sm text-zinc-500">
+              <div className="text-center text-sm" style={{ color: "var(--text-label)" }}>
                 Already have an account?{" "}
                 <Link
                   href="/auth/login"
-                  className="font-medium text-teal-600 hover:text-teal-700 hover:underline"
+                  className="font-medium hover:underline"
+                  style={{ color: "var(--brand)" }}
                 >
                   Login
                 </Link>

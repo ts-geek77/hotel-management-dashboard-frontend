@@ -54,22 +54,22 @@ const LoginPage = () => {
   });
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-zinc-50 px-4">
+    <main className="flex min-h-screen items-center justify-center px-4" style={{ backgroundColor: "var(--surface-muted)" }}>
       <div className="w-full max-w-sm">
-        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-teal-600">
+        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl" style={{ backgroundColor: "var(--brand)" }}>
           <Building2 size={32} color="white" />
         </div>
  
         <div className="mb-8 text-center">
-          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">
+          <h1 className="text-2xl font-semibold tracking-tight" style={{ color: "var(--text-primary)" }}>
             Hotel Admin
           </h1>
-          <p className="mt-1 text-sm text-zinc-500">
+          <p className="mt-1 text-sm" style={{ color: "var(--text-label)" }}>
             Login to manage your hotel operations
           </p>
         </div>
 
-        <Card className="border-zinc-200 shadow-sm">
+        <Card className="shadow-sm" style={{ borderColor: "var(--border)" }}>
           <CardContent className="p-8">
             <form
               onSubmit={handleSubmit}
@@ -77,7 +77,7 @@ const LoginPage = () => {
               autoComplete="off"
             >
               {formError && (
-                <div className="rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600">
+                <div className="rounded-md px-4 py-3 text-sm" style={{ backgroundColor: "var(--error-bg)", borderColor: "var(--error-border)", border: "1px solid", color: "var(--error)" }}>
                   {formError}
                 </div>
               )}
@@ -109,7 +109,8 @@ const LoginPage = () => {
                   <Label htmlFor="password">Password</Label>
                   <Link
                     href="/auth/forgot-password"
-                    className="text-xs text-teal-600 hover:text-teal-700 hover:underline"
+                    className="text-xs hover:underline transition-colors"
+                    style={{ color: "var(--brand)" }}
                   >
                     Forgot Password?
                   </Link>
@@ -137,7 +138,10 @@ const LoginPage = () => {
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="mt-1 w-full bg-teal-600 hover:bg-teal-700 text-white cursor-pointer"
+                className="mt-1 w-full text-white cursor-pointer"
+                style={{ backgroundColor: "var(--brand)" }}
+                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--brand-hover)")}
+                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "var(--brand)")}
               >
                 {isSubmitting ? (
                   <>
@@ -149,11 +153,12 @@ const LoginPage = () => {
                 )}
               </Button>
 
-              <div className="text-center text-sm text-zinc-500">
+              <div className="text-center text-sm" style={{ color: "var(--text-label)" }}>
                 Don't have an account?{" "}
                 <Link
                   href="/auth/register"
-                  className="font-medium text-teal-600 hover:text-teal-700 hover:underline"
+                  className="font-medium hover:underline"
+                  style={{ color: "var(--brand)" }}
                 >
                   Register
                 </Link>

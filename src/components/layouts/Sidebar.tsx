@@ -22,39 +22,43 @@ const Sidebar = () => {
   const pathname = usePathname();
 
   return (
-    <div className="flex flex-col justify-between w-60 h-screen bg-slate-950 text-white">
+    <div className="flex flex-col justify-between w-64 h-screen text-white" style={{ backgroundColor: "var(--sidebar-bg)" }}>
       <div>
-        {/* Logo */}
-        <div className="flex gap-2 px-4 pt-5 items-center text-lg font-bold mb-4">
-          <Building2 size={32} color="#2ec27e" />
-          <p>Hotel Admin</p>
+        <div className="flex gap-2 px-6 pt-8 items-center text-xl font-bold mb-8">
+          <Building2 size={24} style={{ color: "var(--brand)" }} />
+          <p className="tracking-tight">HotelAdmin</p>
         </div>
 
-        <Separator className="bg-slate-800 mb-6" />
-
-        {/* Nav items */}
-        <div className="flex flex-col px-4 gap-2">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-                pathname.startsWith(item.href)
-                  ? "bg-slate-800 text-[#2ec27e] font-medium"
-                  : "text-slate-400 hover:bg-slate-900 hover:text-white"
-              }`}
-            >
-              <item.icon size={20} />
-              <span>{item.label}</span>
-            </Link>
-          ))}
+        <div className="flex flex-col px-3 gap-1">
+          {navItems.map((item) => {
+            const isActive = pathname === item.href || (item.href !== "/dashboards/dashboard" && pathname.startsWith(item.href));
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
+                  isActive
+                    ? "font-semibold"
+                    : "text-slate-400 hover:text-white"
+                }`}
+                style={isActive ? { backgroundColor: "var(--sidebar-active-bg)", color: "var(--brand)" } : {}}
+                onMouseEnter={(e) => {
+                  if (!isActive) (e.currentTarget as HTMLElement).style.backgroundColor = "var(--sidebar-active-bg)";
+                }}
+                onMouseLeave={(e) => {
+                  if (!isActive) (e.currentTarget as HTMLElement).style.backgroundColor = "";
+                }}
+              >
+                <item.icon size={20} style={isActive ? { color: "var(--brand)" } : {}} />
+                <span className="text-[15px]">{item.label}</span>
+              </Link>
+            );
+          })}
         </div>
       </div>
 
-      {/* Footer */}
-      <div className="px-2 text-start">
-        <Separator className="bg-slate-800" />
-        <p className="py-2 text-gray-600 text-sm">© 2026 Hotel Management</p>
+      <div className="px-6 py-6 border-t border-slate-800/50">
+        <p className="text-slate-500 text-xs font-medium">© 2025 Hotel Management</p>
       </div>
     </div>
   );

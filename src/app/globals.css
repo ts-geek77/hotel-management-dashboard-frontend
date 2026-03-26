@@ -3,6 +3,35 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  /* Brand */
+  --brand: #2ec27e;
+  --brand-hover: #25a86a;
+  --brand-light: #f0fdf7;
+
+  /* Sidebar */
+  --sidebar-bg: #0f172a;
+  --sidebar-active-bg: #1e293b;
+
+  /* Surface */
+  --surface: #ffffff;
+  --surface-muted: #f8fafc;
+  --surface-subtle: rgba(248, 250, 252, 0.5);
+
+  /* Border */
+  --border: #e2e8f0;
+  --border-subtle: #f1f5f9;
+
+  /* Text */
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --text-label: #64748b;
+
+  /* Error */
+  --error: #ef4444;
+  --error-bg: #fef2f2;
+  --error-border: #fecaca;
 }
 
 @theme inline {

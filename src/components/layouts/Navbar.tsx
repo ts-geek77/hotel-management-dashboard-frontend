@@ -60,39 +60,51 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="w-full border-b border-gray-200 px-6 py-3 bg-white">
+    <nav className="w-full px-8 py-4 bg-[var(--surface)] border-b border-[var(--border)]">
       <div className="flex justify-between items-center w-full">
-        <p className="font-semibold text-xl text-zinc-900">{getTitle()}</p>
+        <h1 className="font-bold text-2xl tracking-tight text-[var(--text-primary)]">{getTitle()}</h1>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger className="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-gray-100 transition-colors outline-none cursor-pointer">
-            <Avatar className="h-8 w-8">
-              {avatarUrl && <AvatarImage src={avatarUrl} className="object-cover" />}
-              <AvatarFallback className="bg-emerald-100 text-[#2ec27e] text-xs font-semibold">
-                {profile?.name ? profile.name.charAt(0).toUpperCase() : <UserIcon size={16} />}
-              </AvatarFallback>
-            </Avatar>
-            <span className="text-sm text-zinc-700">{profile?.email || "loading..."}</span>
-          </DropdownMenuTrigger>
+        <div className="flex items-center gap-4">
+          <DropdownMenu>
+            <DropdownMenuTrigger className="flex items-center gap-3 rounded-full px-1 py-1 pr-4 hover:bg-[var(--surface-muted)] transition-all duration-200 outline-none cursor-pointer">
+              <Avatar className="h-9 w-9 border-2 border-[var(--border-subtle)]">
+                {avatarUrl && <AvatarImage src={avatarUrl} className="object-cover" />}
+                <AvatarFallback className="bg-[var(--brand-light)] text-[var(--brand)] text-xs font-bold">
+                  {profile?.name ? profile.name.charAt(0).toUpperCase() : <UserIcon size={18} />}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex flex-col items-start">
+                <span className="text-sm font-semibold text-[var(--text-secondary)] leading-none mb-1">
+                  {profile?.name || "Admin User"}
+                </span>
+                <span className="text-[11px] text-[var(--text-muted)] font-medium leading-none">
+                  {profile?.email || "loading..."}
+                </span>
+              </div>
+            </DropdownMenuTrigger>
 
-          <DropdownMenuContent align="end" className="w-44">
-            <DropdownMenuItem 
-              className="gap-2 cursor-pointer"
-              onClick={() => router.push("/dashboards/profile")}
-            >
-              <UserIcon className="h-4 w-4" />
-              Profile
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={handleLogOut}
-              className="gap-2 text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer"
-            >
-              <LogOut className="h-4 w-4" />
-              Logout
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+            <DropdownMenuContent align="end" className="w-56 mt-2 p-1 border-[var(--border)] shadow-lg">
+              <div className="px-3 py-2 border-b border-[var(--border-subtle)] mb-1">
+                <p className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider">My Account</p>
+              </div>
+              <DropdownMenuItem 
+                className="gap-2 py-2.5 px-3 cursor-pointer rounded-md focus:bg-[var(--brand-light)] focus:text-[var(--brand)]"
+                onClick={() => router.push("/dashboards/profile")}
+              >
+                <UserIcon className="h-4 w-4" />
+                <span className="font-medium">View Profile</span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator className="bg-[var(--border-subtle)]" />
+              <DropdownMenuItem
+                onClick={handleLogOut}
+                className="gap-2 py-2.5 px-3 text-red-600 focus:text-red-700 focus:bg-red-50 cursor-pointer rounded-md"
+              >
+                <LogOut className="h-4 w-4" />
+                <span className="font-medium">Logout</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
     </nav>
   );

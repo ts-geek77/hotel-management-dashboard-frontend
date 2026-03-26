@@ -25,15 +25,12 @@ export default function ProfilePage() {
   const [isUploading, setIsUploading] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   
-  // Tab states
   const [activeTab, setActiveTab] = useState<"general" | "security">("general");
 
-  // Form states - General
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-  // Form states - Password
   const [passwordForm, setPasswordForm] = useState({
     oldPassword: "",
     newPassword: "",
@@ -57,7 +54,6 @@ export default function ProfilePage() {
       setName(data.name);
       setPhone(data.phone || "");
       if (data.profileImage) {
-        // Construct full URL if profileImage is a relative path
         const baseUrl = apiClient.defaults.baseURL?.replace('/api', '') || "http://localhost:5000";
         setPreviewUrl(`${baseUrl}${data.profileImage}`);
       }
@@ -74,12 +70,11 @@ export default function ProfilePage() {
       toast.error("Name cannot be empty");
       return;
     }
-
     setIsUpdating(true);
     try {
       await authService.updateProfile({ name, phone });
       toast.success("Profile updated successfully");
-      fetchProfile(); // Refresh data
+      fetchProfile();
     } catch (error) {
       toast.error("Failed to update profile");
     } finally {
@@ -99,12 +94,11 @@ export default function ProfilePage() {
   const handleUploadImage = async (file: File) => {
     const formData = new FormData();
     formData.append("image", file);
-
     setIsUploading(true);
     try {
       await authService.uploadImage(formData);
       toast.success("Image uploaded successfully");
-      fetchProfile(); // Refresh data to get new image URL
+      fetchProfile();
     } catch (error) {
       toast.error("Failed to upload image");
     } finally {
@@ -118,7 +112,6 @@ export default function ProfilePage() {
       toast.error("New passwords do not match");
       return;
     }
-
     setIsChangingPassword(true);
     try {
       await authService.changePassword(passwordForm);
@@ -135,7 +128,7 @@ export default function ProfilePage() {
   if (isLoading) {
     return (
       <div className="flex h-[70vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-teal-600" />
+        <Loader2 className="h-8 w-8 animate-spin" style={{ color: "var(--brand)" }} />
       </div>
     );
   }
@@ -143,18 +136,19 @@ export default function ProfilePage() {
   return (
     <div className="max-w-4xl mx-auto space-y-6 animate-in fade-in duration-500 py-4 px-4 sm:px-6">
       <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-bold tracking-tight text-zinc-900">Account Management</h1>
-        <p className="text-zinc-500 text-sm">Update your information and manage account security.</p>
+        <h1 className="text-2xl font-bold tracking-tight" style={{ color: "var(--text-primary)" }}>Account Management</h1>
+        <p className="text-sm" style={{ color: "var(--text-label)" }}>Update your information and manage account security.</p>
       </div>
 
-      <div className="flex items-center gap-4 border-b border-zinc-200">
+      <div className="flex items-center gap-4 border-b" style={{ borderColor: "var(--border)" }}>
         <button 
           onClick={() => setActiveTab("general")}
           className={`pb-2 px-1 text-sm font-medium transition-colors border-b-2 ${
             activeTab === "general" 
-              ? "border-teal-600 text-teal-600" 
-              : "border-transparent text-zinc-500 hover:text-zinc-700"
+              ? "border-[var(--brand)] text-[var(--brand)]" 
+              : "border-transparent hover:text-[var(--text-primary)]"
           }`}
+          style={activeTab !== "general" ? { color: "var(--text-label)" } : {}}
         >
           General Information
         </button>
@@ -162,32 +156,35 @@ export default function ProfilePage() {
           onClick={() => setActiveTab("security")}
           className={`pb-2 px-1 text-sm font-medium transition-colors border-b-2 ${
             activeTab === "security" 
-              ? "border-teal-600 text-teal-600" 
-              : "border-transparent text-zinc-500 hover:text-zinc-700"
+              ? "border-[var(--brand)] text-[var(--brand)]" 
+              : "border-transparent hover:text-[var(--text-primary)]"
           }`}
+          style={activeTab !== "security" ? { color: "var(--text-label)" } : {}}
         >
-          Security & Password
+          Security &amp; Password
         </button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Profile Summary Card */}
         <div className="space-y-6">
-          <Card className="border-zinc-200 shadow-sm overflow-hidden bg-white">
+          <Card className="shadow-sm overflow-hidden" style={{ borderColor: "var(--border)", backgroundColor: "var(--surface)" }}>
             <CardContent className="pt-8 pb-6 flex flex-col items-center text-center">
               <div className="relative group">
-                <Avatar className="h-28 w-28 border-4 border-white shadow-xl ring-1 ring-zinc-100">
+                <Avatar className="h-28 w-28 border-4 shadow-xl" style={{ borderColor: "var(--surface)", boxShadow: "0 0 0 1px var(--border)" }}>
                   {previewUrl ? (
                     <AvatarImage src={previewUrl} className="object-cover" />
                   ) : null}
-                  <AvatarFallback className="bg-teal-50 text-teal-600 text-3xl font-bold">
+                  <AvatarFallback className="text-3xl font-bold" style={{ backgroundColor: "var(--brand-light)", color: "var(--brand)" }}>
                     {profile?.name?.charAt(0) || <User size={48} />}
                   </AvatarFallback>
                 </Avatar>
                 
                 <Label 
                   htmlFor="avatar-upload"
-                  className="absolute bottom-0 right-0 p-2 bg-teal-600 text-white rounded-full shadow-lg hover:bg-teal-700 transition-all cursor-pointer hover:scale-110 active:scale-95"
+                  className="absolute bottom-0 right-0 p-2 text-white rounded-full shadow-lg transition-all cursor-pointer hover:scale-110 active:scale-95"
+                  style={{ backgroundColor: "var(--brand)" }}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--brand-hover)")}
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "var(--brand)")}
                 >
                   {isUploading ? <Loader2 size={16} className="animate-spin" /> : <Camera size={16} />}
                   <input 
@@ -201,18 +198,18 @@ export default function ProfilePage() {
                 </Label>
               </div>
               
-              <h3 className="mt-4 font-semibold text-lg text-zinc-900">{profile?.name}</h3>
-              <p className="text-sm text-zinc-500 font-medium px-3 py-1 bg-zinc-100 rounded-full mt-1">
+              <h3 className="mt-4 font-semibold text-lg" style={{ color: "var(--text-primary)" }}>{profile?.name}</h3>
+              <p className="text-sm font-medium px-3 py-1 rounded-full mt-1" style={{ color: "var(--text-label)", backgroundColor: "var(--surface-muted)" }}>
                 {profile?.role || "ADMIN"}
               </p>
               
-              <div className="mt-6 w-full pt-4 border-t border-zinc-50 space-y-2 text-left">
-                <div className="flex items-center gap-2 text-xs text-zinc-500">
+              <div className="mt-6 w-full pt-4 border-t space-y-2 text-left" style={{ borderColor: "var(--border-subtle)" }}>
+                <div className="flex items-center gap-2 text-xs" style={{ color: "var(--text-label)" }}>
                   <Mail size={12} />
                   <span className="truncate">{profile?.email}</span>
                 </div>
                 {profile?.phone && (
-                  <div className="flex items-center gap-2 text-xs text-zinc-500">
+                  <div className="flex items-center gap-2 text-xs" style={{ color: "var(--text-label)" }}>
                     <Phone size={12} />
                     <span>{profile.phone}</span>
                   </div>
@@ -222,58 +219,58 @@ export default function ProfilePage() {
           </Card>
         </div>
 
-        {/* Action Card */}
         <div className="md:col-span-2">
           {activeTab === "general" ? (
-            <Card className="border-zinc-200 shadow-sm bg-white">
-              <CardHeader className="border-b border-zinc-50 pb-4">
+            <Card className="shadow-sm" style={{ borderColor: "var(--border)", backgroundColor: "var(--surface)" }}>
+              <CardHeader className="border-b pb-4" style={{ borderColor: "var(--border-subtle)" }}>
                 <CardTitle>Personal Details</CardTitle>
-                <CardDescription>
-                  Update your name and contact information.
-                </CardDescription>
+                <CardDescription>Update your name and contact information.</CardDescription>
               </CardHeader>
               <CardContent className="pt-6 space-y-5">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div className="space-y-1.5">
-                    <Label htmlFor="name" className="text-zinc-700 font-medium">Full Name</Label>
+                    <Label htmlFor="name" className="font-medium" style={{ color: "var(--text-secondary)" }}>Full Name</Label>
                     <div className="relative">
-                      <User className="absolute left-3 top-2.5 h-4 w-4 text-zinc-400" />
+                      <User className="absolute left-3 top-2.5 h-4 w-4" style={{ color: "var(--text-muted)" }} />
                       <Input 
                         id="name" 
                         placeholder="Enter your name"
                         value={name} 
                         onChange={(e) => setName(e.target.value)}
-                        className="pl-9 focus-visible:ring-teal-500 border-zinc-200" 
+                        className="pl-9 focus-visible:ring-[var(--brand)]"
+                        style={{ borderColor: "var(--border)" }}
                       />
                     </div>
                   </div>
                   <div className="space-y-1.5">
-                    <Label htmlFor="phone" className="text-zinc-700 font-medium">Phone Number</Label>
+                    <Label htmlFor="phone" className="font-medium" style={{ color: "var(--text-secondary)" }}>Phone Number</Label>
                     <div className="relative">
-                      <Phone className="absolute left-3 top-2.5 h-4 w-4 text-zinc-400" />
+                      <Phone className="absolute left-3 top-2.5 h-4 w-4" style={{ color: "var(--text-muted)" }} />
                       <Input 
                         id="phone" 
                         placeholder="Enter phone number"
                         value={phone} 
                         onChange={(e) => setPhone(e.target.value)}
-                        className="pl-9 focus-visible:ring-teal-500 border-zinc-200" 
+                        className="pl-9 focus-visible:ring-[var(--brand)]"
+                        style={{ borderColor: "var(--border)" }}
                       />
                     </div>
                   </div>
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="email" className="text-zinc-700 font-medium">Email Address</Label>
+                  <Label htmlFor="email" className="font-medium" style={{ color: "var(--text-secondary)" }}>Email Address</Label>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-2.5 h-4 w-4 text-zinc-400" />
+                    <Mail className="absolute left-3 top-2.5 h-4 w-4" style={{ color: "var(--text-muted)" }} />
                     <Input 
                       id="email" 
                       value={profile?.email || ""} 
-                      className="pl-9 bg-zinc-50 text-zinc-500 cursor-not-allowed border-zinc-200" 
+                      className="pl-9 cursor-not-allowed"
+                      style={{ backgroundColor: "var(--surface-muted)", color: "var(--text-label)", borderColor: "var(--border)" }}
                       disabled 
                     />
                   </div>
-                  <p className="text-[10px] text-zinc-400 italic mt-1">Email address cannot be changed from the profile dashboard.</p>
+                  <p className="text-[10px] italic mt-1" style={{ color: "var(--text-muted)" }}>Email address cannot be changed from the profile dashboard.</p>
                 </div>
 
                 <div className="pt-2 flex justify-end gap-3">
@@ -283,14 +280,17 @@ export default function ProfilePage() {
                       setName(profile?.name || "");
                       setPhone(profile?.phone || "");
                     }}
-                    className="border-zinc-200 text-zinc-600 hover:bg-zinc-50"
+                    style={{ borderColor: "var(--border)", color: "var(--text-secondary)" }}
                   >
                     Reset
                   </Button>
                   <Button 
                     disabled={isUpdating}
                     onClick={handleUpdateProfile}
-                    className="bg-teal-600 hover:bg-teal-700 text-white min-w-[120px] shadow-sm"
+                    className="text-white min-w-[120px] shadow-sm"
+                    style={{ backgroundColor: "var(--brand)" }}
+                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--brand-hover)")}
+                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "var(--brand)")}
                   >
                     {isUpdating ? (
                       <>
@@ -305,31 +305,31 @@ export default function ProfilePage() {
               </CardContent>
             </Card>
           ) : (
-            <Card className="border-zinc-200 shadow-sm bg-white">
-              <CardHeader className="border-b border-zinc-50 pb-4">
+            <Card className="shadow-sm" style={{ borderColor: "var(--border)", backgroundColor: "var(--surface)" }}>
+              <CardHeader className="border-b pb-4" style={{ borderColor: "var(--border-subtle)" }}>
                 <CardTitle>Change Password</CardTitle>
-                <CardDescription>
-                  Keep your account secure by using a strong password.
-                </CardDescription>
+                <CardDescription>Keep your account secure by using a strong password.</CardDescription>
               </CardHeader>
               <CardContent className="pt-6">
                 <form onSubmit={handleChangePassword} className="space-y-4">
                   <div className="space-y-1.5">
                     <Label htmlFor="oldPassword">Current Password</Label>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-2.5 h-4 w-4 text-zinc-400" />
+                      <Lock className="absolute left-3 top-2.5 h-4 w-4" style={{ color: "var(--text-muted)" }} />
                       <Input 
                         id="oldPassword"
                         type={showPasswords.old ? "text" : "password"}
                         value={passwordForm.oldPassword}
                         onChange={(e) => setPasswordForm({...passwordForm, oldPassword: e.target.value})}
-                        className="pl-9 pr-10 border-zinc-200"
+                        className="pl-9 pr-10"
+                        style={{ borderColor: "var(--border)" }}
                         required
                       />
                       <button 
                         type="button"
                         onClick={() => setShowPasswords({...showPasswords, old: !showPasswords.old})}
-                        className="absolute right-3 top-2.5 text-zinc-400 hover:text-zinc-600"
+                        className="absolute right-3 top-2.5 hover:text-[var(--text-secondary)]"
+                        style={{ color: "var(--text-muted)" }}
                       >
                         {showPasswords.old ? <EyeOff size={16} /> : <Eye size={16} />}
                       </button>
@@ -340,19 +340,21 @@ export default function ProfilePage() {
                     <div className="space-y-1.5">
                       <Label htmlFor="newPassword">New Password</Label>
                       <div className="relative">
-                        <Lock className="absolute left-3 top-2.5 h-4 w-4 text-zinc-400" />
+                        <Lock className="absolute left-3 top-2.5 h-4 w-4" style={{ color: "var(--text-muted)" }} />
                         <Input 
                           id="newPassword"
                           type={showPasswords.new ? "text" : "password"}
                           value={passwordForm.newPassword}
                           onChange={(e) => setPasswordForm({...passwordForm, newPassword: e.target.value})}
-                          className="pl-9 pr-10 border-zinc-200"
+                          className="pl-9 pr-10"
+                          style={{ borderColor: "var(--border)" }}
                           required
                         />
                         <button 
                           type="button"
                           onClick={() => setShowPasswords({...showPasswords, new: !showPasswords.new})}
-                          className="absolute right-3 top-2.5 text-zinc-400 hover:text-zinc-600"
+                          className="absolute right-3 top-2.5 hover:text-[var(--text-secondary)]"
+                          style={{ color: "var(--text-muted)" }}
                         >
                           {showPasswords.new ? <EyeOff size={16} /> : <Eye size={16} />}
                         </button>
@@ -361,19 +363,21 @@ export default function ProfilePage() {
                     <div className="space-y-1.5">
                       <Label htmlFor="confirmPassword">Confirm Password</Label>
                       <div className="relative">
-                        <Lock className="absolute left-3 top-2.5 h-4 w-4 text-zinc-400" />
+                        <Lock className="absolute left-3 top-2.5 h-4 w-4" style={{ color: "var(--text-muted)" }} />
                         <Input 
                           id="confirmPassword"
                           type={showPasswords.confirm ? "text" : "password"}
                           value={passwordForm.confirmPassword}
                           onChange={(e) => setPasswordForm({...passwordForm, confirmPassword: e.target.value})}
-                          className="pl-9 pr-10 border-zinc-200"
+                          className="pl-9 pr-10"
+                          style={{ borderColor: "var(--border)" }}
                           required
                         />
                         <button 
                           type="button"
                           onClick={() => setShowPasswords({...showPasswords, confirm: !showPasswords.confirm})}
-                          className="absolute right-3 top-2.5 text-zinc-400 hover:text-zinc-600"
+                          className="absolute right-3 top-2.5 hover:text-[var(--text-secondary)]"
+                          style={{ color: "var(--text-muted)" }}
                         >
                           {showPasswords.confirm ? <EyeOff size={16} /> : <Eye size={16} />}
                         </button>
@@ -385,7 +389,10 @@ export default function ProfilePage() {
                     <Button 
                       type="submit"
                       disabled={isChangingPassword}
-                      className="bg-teal-600 hover:bg-teal-700 text-white min-w-[150px]"
+                      className="text-white min-w-[150px]"
+                      style={{ backgroundColor: "var(--brand)" }}
+                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--brand-hover)")}
+                      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "var(--brand)")}
                     >
                       {isChangingPassword ? (
                         <>
