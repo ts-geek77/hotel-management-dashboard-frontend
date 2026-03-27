@@ -21,7 +21,7 @@ export interface Booking {
   roomType: string;
   checkIn: string;
   checkOut: string;
-  status: "Booked" | "Checked In" | "Checked Out" | "Cancelled" | "Confirmed" | "Pending";
+  status: "Booked" | "Checked In" | "Checked Out" | "Cancelled";
   price: number;
   roomNumber?: string;
 }

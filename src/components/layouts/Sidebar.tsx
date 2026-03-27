@@ -58,7 +58,7 @@ const Sidebar = () => {
       </div>
 
       <div className="px-6 py-6 border-t border-slate-800/50">
-        <p className="text-slate-500 text-xs font-medium">© 2025 Hotel Management</p>
+        <p className="text-slate-500 text-xs font-medium">© 2026 Hotel Management</p>
       </div>
     </div>
   );
