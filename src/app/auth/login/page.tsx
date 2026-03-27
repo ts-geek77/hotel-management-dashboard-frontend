@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
-import useForm from "@/hooks/useForm";
+import { useForm } from "@/hooks";
 import { Building2, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -12,17 +12,9 @@ import * as Yup from "yup";
 import authService from "@/services/auth.service";
 import Cookies from "js-cookie";
 import Link from "next/link";
+import { LOGIN_SCHEMA, INITIAL_LOGIN_VALUES } from "@/constants/auth";
 
-const loginSchema = Yup.object().shape({
-  email: Yup.string()
-    .email("Invalid email address")
-    .required("Email is required"),
-  password: Yup.string()
-    .min(6, "Password must be at least 6 characters")
-    .required("Password is required"),
-});
-
-type LoginInput = Yup.InferType<typeof loginSchema>;
+type LoginInput = Yup.InferType<typeof LOGIN_SCHEMA>;
 
 const LoginPage = () => {
   const router = useRouter();
@@ -37,8 +29,8 @@ const LoginPage = () => {
     handleBlur,
     handleSubmit,
   } = useForm<LoginInput>({
-    initialValues: { email: "", password: "" },
-    schema: loginSchema,
+    initialValues: INITIAL_LOGIN_VALUES,
+    schema: LOGIN_SCHEMA,
     onSubmit: async (data) => {
       try {
         const res = await authService.login(data);

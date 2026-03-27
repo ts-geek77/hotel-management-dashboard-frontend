@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,116 +12,60 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { User, Mail, Shield, Loader2, Camera, Phone, Lock, Eye, EyeOff } from "lucide-react";
-import authService from "@/services/auth.service";
-import { toast } from "sonner";
-import apiClient from "@/services/api-client";
-import { User as UserType } from "@/types/auth";
+import { User, Mail, Loader2, Camera, Phone, Lock, Eye, EyeOff } from "lucide-react";
+import { useProfile } from "@/hooks";
+import {
+  PROFILE_TABS,
+  ProfileTab,
+  INITIAL_PASSWORD_FORM,
+  INITIAL_SHOW_PASSWORDS,
+} from "@/constants";
 
 export default function ProfilePage() {
-  const [profile, setProfile] = useState<UserType | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isUpdating, setIsUpdating] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
-  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const {
+    profile,
+    isLoading,
+    isUpdating,
+    isUploading,
+    isChangingPassword,
+    previewUrl,
+    updateProfile,
+    uploadImage,
+    changePassword,
+  } = useProfile();
   
-  const [activeTab, setActiveTab] = useState<"general" | "security">("general");
+  const [activeTab, setActiveTab] = useState<ProfileTab>(PROFILE_TABS.GENERAL);
 
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [name, setName] = useState(profile?.name || "");
+  const [phone, setPhone] = useState(profile?.phone || "");
 
-  const [passwordForm, setPasswordForm] = useState({
-    oldPassword: "",
-    newPassword: "",
-    confirmPassword: "",
-  });
-  const [showPasswords, setShowPasswords] = useState({
-    old: false,
-    new: false,
-    confirm: false,
-  });
+  const [passwordForm, setPasswordForm] = useState(INITIAL_PASSWORD_FORM);
+  const [showPasswords, setShowPasswords] = useState(INITIAL_SHOW_PASSWORDS);
 
-  useEffect(() => {
-    fetchProfile();
-  }, []);
-
-  const fetchProfile = async () => {
-    setIsLoading(true);
-    try {
-      const data = await authService.getProfile();
-      setProfile(data);
-      setName(data.name);
-      setPhone(data.phone || "");
-      if (data.profileImage) {
-        const baseUrl = apiClient.defaults.baseURL?.replace('/api', '') || "http://localhost:5000";
-        setPreviewUrl(`${baseUrl}${data.profileImage}`);
-      }
-    } catch (error) {
-      console.error("Failed to fetch profile:", error);
-      toast.error("Failed to load profile information");
-    } finally {
-      setIsLoading(false);
+  // Sync state when profile is loaded
+  useState(() => {
+    if (profile) {
+      setName(profile.name);
+      setPhone(profile.phone || "");
     }
-  };
+  });
 
   const handleUpdateProfile = async () => {
-    if (!name.trim()) {
-      toast.error("Name cannot be empty");
-      return;
-    }
-    setIsUpdating(true);
-    try {
-      await authService.updateProfile({ name, phone });
-      toast.success("Profile updated successfully");
-      fetchProfile();
-    } catch (error) {
-      toast.error("Failed to update profile");
-    } finally {
-      setIsUpdating(false);
-    }
+    await updateProfile({ name, phone });
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const url = URL.createObjectURL(file);
-      setPreviewUrl(url);
-      handleUploadImage(file);
-    }
-  };
-
-  const handleUploadImage = async (file: File) => {
-    const formData = new FormData();
-    formData.append("image", file);
-    setIsUploading(true);
-    try {
-      await authService.uploadImage(formData);
-      toast.success("Image uploaded successfully");
-      fetchProfile();
-    } catch (error) {
-      toast.error("Failed to upload image");
-    } finally {
-      setIsUploading(false);
+      uploadImage(file);
     }
   };
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      toast.error("New passwords do not match");
-      return;
-    }
-    setIsChangingPassword(true);
-    try {
-      await authService.changePassword(passwordForm);
-      toast.success("Password changed successfully");
-      setPasswordForm({ oldPassword: "", newPassword: "", confirmPassword: "" });
-    } catch (error: any) {
-      const message = error?.response?.data?.message || "Failed to change password";
-      toast.error(message);
-    } finally {
-      setIsChangingPassword(false);
+    const success = await changePassword(passwordForm);
+    if (success) {
+      setPasswordForm(INITIAL_PASSWORD_FORM);
     }
   };
 
@@ -142,24 +86,24 @@ export default function ProfilePage() {
 
       <div className="flex items-center gap-4 border-b" style={{ borderColor: "var(--border)" }}>
         <button 
-          onClick={() => setActiveTab("general")}
+          onClick={() => setActiveTab(PROFILE_TABS.GENERAL)}
           className={`pb-2 px-1 text-sm font-medium transition-colors border-b-2 ${
-            activeTab === "general" 
+            activeTab === PROFILE_TABS.GENERAL 
               ? "border-[var(--brand)] text-[var(--brand)]" 
               : "border-transparent hover:text-[var(--text-primary)]"
           }`}
-          style={activeTab !== "general" ? { color: "var(--text-label)" } : {}}
+          style={activeTab !== PROFILE_TABS.GENERAL ? { color: "var(--text-label)" } : {}}
         >
           General Information
         </button>
         <button 
-          onClick={() => setActiveTab("security")}
+          onClick={() => setActiveTab(PROFILE_TABS.SECURITY)}
           className={`pb-2 px-1 text-sm font-medium transition-colors border-b-2 ${
-            activeTab === "security" 
+            activeTab === PROFILE_TABS.SECURITY 
               ? "border-[var(--brand)] text-[var(--brand)]" 
               : "border-transparent hover:text-[var(--text-primary)]"
           }`}
-          style={activeTab !== "security" ? { color: "var(--text-label)" } : {}}
+          style={activeTab !== PROFILE_TABS.SECURITY ? { color: "var(--text-label)" } : {}}
         >
           Security &amp; Password
         </button>
@@ -220,7 +164,7 @@ export default function ProfilePage() {
         </div>
 
         <div className="md:col-span-2">
-          {activeTab === "general" ? (
+          {activeTab === PROFILE_TABS.GENERAL ? (
             <Card className="shadow-sm" style={{ borderColor: "var(--border)", backgroundColor: "var(--surface)" }}>
               <CardHeader className="border-b pb-4" style={{ borderColor: "var(--border-subtle)" }}>
                 <CardTitle>Personal Details</CardTitle>

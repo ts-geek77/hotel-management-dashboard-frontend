@@ -4,32 +4,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
-import useForm from "@/hooks/useForm";
+import { useForm } from "@/hooks";
 import { Building2, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import * as Yup from "yup";
 import authService from "@/services/auth.service";
 import Link from "next/link";
+import { REGISTER_SCHEMA, INITIAL_REGISTER_VALUES } from "@/constants/auth";
 
-const registerSchema = Yup.object().shape({
-  name: Yup.string()
-    .min(2, "Name is too short")
-    .required("Full name is required"),
-  email: Yup.string()
-    .email("Invalid email address")
-    .required("Email is required"),
-  phone: Yup.string()
-    .required("Phone number is required"),
-  password: Yup.string()
-    .min(6, "Password must be at least 6 characters")
-    .required("Password is required"),
-  confirmPassword: Yup.string()
-    .oneOf([Yup.ref("password")], "Passwords must match")
-    .required("Confirm your password"),
-});
-
-type RegisterInput = Yup.InferType<typeof registerSchema>;
+type RegisterInput = Yup.InferType<typeof REGISTER_SCHEMA>;
 
 const RegisterPage = () => {
   const router = useRouter();
@@ -44,14 +28,8 @@ const RegisterPage = () => {
     handleBlur,
     handleSubmit,
   } = useForm<RegisterInput>({
-    initialValues: {
-      name: "",
-      email: "",
-      phone: "",
-      password: "",
-      confirmPassword: "",
-    },
-    schema: registerSchema,
+    initialValues: INITIAL_REGISTER_VALUES,
+    schema: REGISTER_SCHEMA,
     onSubmit: async (data) => {
       try {
         await authService.register(data);

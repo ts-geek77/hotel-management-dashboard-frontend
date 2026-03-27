@@ -4,27 +4,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
-import useForm from "@/hooks/useForm";
+import { useForm } from "@/hooks";
 import { Building2, Loader2, ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import * as Yup from "yup";
 import authService from "@/services/auth.service";
 import Link from "next/link";
+import { FORGOT_PASSWORD_SCHEMA, INITIAL_FORGOT_PASSWORD_VALUES } from "@/constants/auth";
 
-const forgotPasswordSchema = Yup.object().shape({
-  email: Yup.string()
-    .email("Invalid email format")
-    .required("Email is required"),
-  newPassword: Yup.string()
-    .min(6, "New password must be at least 6 characters")
-    .required("Password is required"),
-  confirmPassword: Yup.string()
-    .oneOf([Yup.ref("newPassword")], "Passwords don't match")
-    .required("Confirm your password"),
-});
-
-type ForgotPasswordInput = Yup.InferType<typeof forgotPasswordSchema>;
+type ForgotPasswordInput = Yup.InferType<typeof FORGOT_PASSWORD_SCHEMA>;
 
 const ForgotPasswordPage = () => {
   const router = useRouter();
@@ -41,12 +30,8 @@ const ForgotPasswordPage = () => {
     handleSubmit,
     setFormSuccess,
   } = useForm<ForgotPasswordInput>({
-    initialValues: {
-      email: "",
-      newPassword: "",
-      confirmPassword: "",
-    },
-    schema: forgotPasswordSchema,
+    initialValues: INITIAL_FORGOT_PASSWORD_VALUES,
+    schema: FORGOT_PASSWORD_SCHEMA,
     onSubmit: async (data) => {
       try {
         const res = await authService.forgotPassword(data);
@@ -62,25 +47,26 @@ const ForgotPasswordPage = () => {
   });
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-zinc-50 px-4">
+    <main className="flex min-h-screen items-center justify-center px-4" style={{ backgroundColor: "var(--surface-muted)" }}>
       <div className="w-full max-w-sm">
         <Link 
           href="/auth/login"
-          className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-teal-600 transition-transform hover:scale-105"
+          className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl transition-transform hover:scale-105"
+          style={{ backgroundColor: "var(--brand)" }}
         >
           <Building2 size={32} color="white" />
         </Link>
 
         <div className="mb-8 text-center">
-          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">
+          <h1 className="text-2xl font-semibold tracking-tight" style={{ color: "var(--text-primary)" }}>
             Forgot Password?
           </h1>
-          <p className="mt-1 text-sm text-zinc-500">
+          <p className="mt-1 text-sm" style={{ color: "var(--text-label)" }}>
             Enter your details below to reset your password
           </p>
         </div>
 
-        <Card className="border-zinc-200 shadow-sm">
+        <Card className="shadow-sm" style={{ borderColor: "var(--border)" }}>
           <CardContent className="p-8">
             <form
               onSubmit={handleSubmit}
@@ -88,13 +74,13 @@ const ForgotPasswordPage = () => {
               autoComplete="off"
             >
               {formError && (
-                <div className="rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600">
+                <div className="rounded-md px-4 py-3 text-sm" style={{ backgroundColor: "var(--error-bg)", border: "1px solid var(--error-border)", color: "var(--error)" }}>
                   {formError}
                 </div>
               )}
 
               {formSuccess && (
-                <div className="rounded-md bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-600">
+                <div className="rounded-md px-4 py-3 text-sm" style={{ backgroundColor: "var(--success-bg)", border: "1px solid var(--success-border)", color: "var(--success)" }}>
                   {formSuccess}
                 </div>
               )}
@@ -170,7 +156,10 @@ const ForgotPasswordPage = () => {
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="mt-1 w-full bg-teal-600 hover:bg-teal-700 text-white cursor-pointer"
+                className="mt-1 w-full text-white cursor-pointer"
+                style={{ backgroundColor: "var(--brand)" }}
+                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--brand-hover)")}
+                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "var(--brand)")}
               >
                 {isSubmitting ? (
                   <>
@@ -185,7 +174,8 @@ const ForgotPasswordPage = () => {
               <div className="text-center">
                 <Link
                   href="/auth/login"
-                  className="inline-flex items-center gap-2 text-sm font-medium text-zinc-500 hover:text-teal-600 transition-colors"
+                  className="inline-flex items-center gap-2 text-sm font-medium transition-colors hover:scale-105"
+                  style={{ color: "var(--text-label)" }}
                 >
                   <ArrowLeft size={16} />
                   Back to Login

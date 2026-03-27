@@ -1,8 +1,4 @@
 "use client";
-
-import api from "@/services/api-client";
-import { Booking, Guest, Room } from "@/types";
-import { useEffect, useState } from "react";
 import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
@@ -17,6 +13,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { BedDouble, BedSingle, CalendarCheck, Users, ArrowRight } from "lucide-react";
+import { useDashboard } from "@/hooks";
+import { BOOKING_BADGE_STYLES, BOOKING_LABELS, DASHBOARD_NAV_ITEMS } from "@/constants";
   
 interface StatCardProps {
   title: string;
@@ -71,63 +69,19 @@ const NavCard = ({ title, subtitle, href }: NavCardProps) => (
   </Link>
 );
 
-const bookingBadge: Record<Booking["status"], string> = {
-  Booked: "bg-blue-50 text-blue-600 hover:bg-blue-100 border-transparent",
-  "Checked In": "bg-purple-50 text-purple-600 hover:bg-purple-100 border-transparent",
-  "Checked Out": "bg-slate-100 text-slate-600 hover:bg-slate-200 border-transparent",
-  Cancelled: "bg-red-50 text-red-600 hover:bg-red-100 border-transparent",
-  Confirmed: "bg-blue-50 text-blue-600 hover:bg-blue-100 border-transparent",
-  Pending: "bg-amber-50 text-amber-600 hover:bg-amber-100 border-transparent",
-};
-
-const bookingLabel: Record<Booking["status"], string> = {
-  Booked: "Booked",
-  "Checked In": "Checked In",
-  "Checked Out": "Checked Out",
-  Cancelled: "Cancelled",
-  Confirmed: "Confirmed",
-  Pending: "Pending",
-};
-
 const toDateInput = (dateStr: string) => dateStr?.slice(0, 10) ?? "";
 
 const DashboardPage = () => {
-  const [rooms, setRooms] = useState<Room[]>([]);
-  const [guests, setGuests] = useState<Guest[]>([]);
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchAll = async () => {
-      try {
-        const [r, g, b] = await Promise.all([
-          api("/rooms"),
-          api("/guests"),
-          api("/bookings"),
-        ]);
-        setRooms(r.data);
-        setGuests(g.data);
-        setBookings(b.data);
-      } catch {
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchAll();
-  }, []);
-
-  const availableRooms = rooms.filter((r) => r.status === "Available").length;
-  const activeBookings = bookings.filter(
-    (b) => b.status === "Booked" || b.status === "Checked In",
-  ).length;
-  const checkedInGuests = bookings.filter((b) => b.status === "Checked In").length;
-
-  const recentBookings = [...bookings]
-    .sort((a, b) => b.id - a.id)
-    .slice(0, 5);
-
-  const guestMap = Object.fromEntries(guests.map((g) => [g.id, g.name]));
-  const roomMap = Object.fromEntries(rooms.map((r) => [r.id, r.roomNumber]));
+  const {
+    rooms,
+    guests,
+    loading,
+    availableRoomsCount,
+    activeBookingsCount,
+    recentBookings,
+    guestMap,
+    roomMap,
+  } = useDashboard();
 
   return (
     <div className="space-y-4 p-4 min-h-screen" style={{ backgroundColor: "var(--surface-subtle)" }}>
@@ -141,13 +95,13 @@ const DashboardPage = () => {
         />
         <StatCard
           title="Available Rooms"
-          value={availableRooms}
+          value={availableRoomsCount}
           icon={<BedSingle size={24} className="text-emerald-500" />}
           loading={loading}
         />
         <StatCard
           title="Active Bookings"
-          value={activeBookings}
+          value={activeBookingsCount}
           icon={<CalendarCheck size={24} className="text-purple-500" />}
           loading={loading}
         />
@@ -160,21 +114,14 @@ const DashboardPage = () => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <NavCard
-          title="Manage Rooms"
-          subtitle="View and edit rooms details"
-          href="/dashboards/rooms"
-        />
-        <NavCard
-          title="View Guests"
-          subtitle="Guest information and history"
-          href="/dashboards/guests"
-        />
-        <NavCard
-          title="Manage Bookings"
-          subtitle="Create and update bookings"
-          href="/dashboards/bookings"
-        />
+        {DASHBOARD_NAV_ITEMS.map((item) => (
+          <NavCard
+            key={item.href}
+            title={item.title}
+            subtitle={item.subtitle}
+            href={item.href}
+          />
+        ))}
       </div>
 
       <Card className="border-none shadow-sm" style={{ backgroundColor: "var(--surface)" }}>
@@ -230,8 +177,8 @@ const DashboardPage = () => {
                     <TableCell className="px-6 py-4 text-center font-medium" style={{ color: "var(--text-primary)" }}>{toDateInput(b.checkOut)}</TableCell>
                     <TableCell className="px-6 py-4 align-middle">
                       <div className="flex justify-center w-full">
-                        <Badge variant="outline" className={`px-2.5 py-0.5 rounded-full font-medium ${bookingBadge[b.status]}`}>
-                          {bookingLabel[b.status]}
+                        <Badge variant="outline" className={`px-2.5 py-0.5 rounded-full font-medium ${BOOKING_BADGE_STYLES[b.status]}`}>
+                          {BOOKING_LABELS[b.status]}
                         </Badge>
                       </div>
                     </TableCell>

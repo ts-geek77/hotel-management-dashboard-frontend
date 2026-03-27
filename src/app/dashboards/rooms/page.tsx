@@ -1,18 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { useState } from "react";
 import { Pencil, Trash2, Plus } from "lucide-react";
 
 import { Room } from "@/types";
+import { CreateRoomInput, UpdateRoomInput } from "@/services/room.service";
 import {
-  getRooms,
-  createRoom,
-  updateRoom,
-  deleteRoom,
-  CreateRoomInput,
-  UpdateRoomInput,
-} from "@/services/room.service";
+  ROOM_TYPES,
+  ROOM_STATUSES,
+  ROOM_STATUS_BADGE,
+  DEFAULT_ROOM_FORM,
+} from "@/constants";
+import { useRooms } from "@/hooks";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -53,67 +52,29 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const statusBadge: Record<Room["status"], string> = {
-  Available: "bg-emerald-50 text-emerald-600 border-transparent hover:bg-emerald-100",
-  Booked: "bg-blue-50 text-blue-600 border-transparent hover:bg-blue-100",
-  Maintenance: "bg-amber-50 text-amber-600 border-transparent hover:bg-amber-100",
-};
-
-const ROOM_TYPES = ["Single", "Double", "Deluxe", "Suite"];
-const ROOM_STATUSES: Room["status"][] = ["Available", "Booked", "Maintenance"];
-
-const defaultForm: CreateRoomInput = {
-  roomNumber: "",
-  roomType: "Single",
-  price: 0,
-  status: "Available",
-};
-
 export default function RoomsPage() {
-  const [rooms, setRooms] = useState<Room[]>([]);
-  const [loading, setLoading] = useState(true);
+  const {
+    rooms,
+    loading,
+    saving,
+    handleAddRoom,
+    handleUpdateRoom,
+    handleDeleteRoom,
+  } = useRooms();
 
   const [addOpen, setAddOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
-  const [addForm, setAddForm] = useState<CreateRoomInput>(defaultForm);
+  const [addForm, setAddForm] = useState<CreateRoomInput>(DEFAULT_ROOM_FORM);
   const [editForm, setEditForm] = useState<UpdateRoomInput & { id: number }>({ id: 0 });
   const [deleteTarget, setDeleteTarget] = useState<{ id: number; roomNumber: string } | null>(null);
-  const [saving, setSaving] = useState(false);
 
-  const fetchRooms = async () => {
-    try {
-      setLoading(true);
-      const data = await getRooms();
-      setRooms(data);
-    } catch {
-      toast.error("Failed to load rooms.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchRooms();
-  }, []);
-
-  const handleAdd = async () => {
-    if (!addForm.roomNumber || !addForm.roomType || !addForm.price) {
-      toast.error("Please fill in all fields.");
-      return;
-    }
-    try {
-      setSaving(true);
-      await createRoom({ ...addForm, price: Number(addForm.price) });
-      toast.success("Room added successfully!");
+  const onAdd = async () => {
+    const success = await handleAddRoom(addForm);
+    if (success) {
       setAddOpen(false);
-      setAddForm(defaultForm);
-      fetchRooms();
-    } catch {
-      toast.error("Failed to add room.");
-    } finally {
-      setSaving(false);
+      setAddForm(DEFAULT_ROOM_FORM);
     }
   };
 
@@ -128,18 +89,11 @@ export default function RoomsPage() {
     setEditOpen(true);
   };
 
-  const handleEdit = async () => {
-    try {
-      setSaving(true);
-      const { id, ...rest } = editForm;
-      await updateRoom(id, { ...rest, price: Number(rest.price) });
-      toast.success("Room updated successfully!");
+  const onEdit = async () => {
+    const { id, ...rest } = editForm;
+    const success = await handleUpdateRoom(id, rest);
+    if (success) {
       setEditOpen(false);
-      fetchRooms();
-    } catch {
-      toast.error("Failed to update room.");
-    } finally {
-      setSaving(false);
     }
   };
 
@@ -148,18 +102,11 @@ export default function RoomsPage() {
     setDeleteOpen(true);
   };
 
-  const handleDelete = async () => {
+  const onDelete = async () => {
     if (!deleteTarget) return;
-    try {
-      setSaving(true);
-      await deleteRoom(deleteTarget.id);
-      toast.success("Room deleted.");
+    const success = await handleDeleteRoom(deleteTarget.id);
+    if (success) {
       setDeleteOpen(false);
-      fetchRooms();
-    } catch {
-      toast.error("Failed to delete room.");
-    } finally {
-      setSaving(false);
       setDeleteTarget(null);
     }
   };
@@ -173,7 +120,7 @@ export default function RoomsPage() {
           </p>
         </div>
         <Button
-          onClick={() => { setAddForm(defaultForm); setAddOpen(true); }}
+          onClick={() => { setAddForm(DEFAULT_ROOM_FORM); setAddOpen(true); }}
           className="flex items-center gap-2 font-semibold"
           style={{ backgroundColor: "var(--brand)", color: "var(--text-on-brand)" }}
         >
@@ -236,7 +183,7 @@ export default function RoomsPage() {
                     </TableCell>
                     <TableCell className="px-6 py-4 text-center align-middle">
                       <div className="flex justify-center">
-                        <Badge variant="outline" className={`rounded-full px-3 py-0.5 font-medium font-bold ${statusBadge[room.status]}`}>
+                        <Badge variant="outline" className={`rounded-full px-3 py-0.5 font-medium font-bold ${ROOM_STATUS_BADGE[room.status]}`}>
                           {room.status}
                         </Badge>
                       </div>
@@ -311,7 +258,7 @@ export default function RoomsPage() {
           </div>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setAddOpen(false)} disabled={saving}>Cancel</Button>
-            <Button onClick={handleAdd} disabled={saving} style={{ backgroundColor: "var(--brand)", color: "#fff" }}>
+            <Button onClick={onAdd} disabled={saving} style={{ backgroundColor: "var(--brand)", color: "#fff" }}>
               {saving ? "Saving..." : "Add Room"}
             </Button>
           </DialogFooter>
@@ -360,7 +307,7 @@ export default function RoomsPage() {
           </div>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setEditOpen(false)} disabled={saving}>Cancel</Button>
-            <Button onClick={handleEdit} disabled={saving} style={{ backgroundColor: "var(--brand)", color: "#fff" }}>
+            <Button onClick={onEdit} disabled={saving} style={{ backgroundColor: "var(--brand)", color: "#fff" }}>
               {saving ? "Saving..." : "Save Changes"}
             </Button>
           </DialogFooter>
@@ -380,7 +327,7 @@ export default function RoomsPage() {
           <AlertDialogFooter>
             <AlertDialogCancel disabled={saving}>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              onClick={handleDelete}
+              onClick={onDelete}
               disabled={saving}
               className="bg-[var(--destructive)] hover:bg-[var(--destructive-hover)] text-[var(--text-on-brand)]"
             >
