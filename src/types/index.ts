@@ -11,6 +11,7 @@ export interface Guest {
   name: string;
   email: string;
   phone: string;
+  roomNumber?: string;
 }
 
 export interface Booking {
@@ -22,6 +23,7 @@ export interface Booking {
   checkOut: string;
   status: "Booked" | "Checked In" | "Checked Out" | "Cancelled" | "Confirmed" | "Pending";
   price: number;
+  roomNumber?: string;
 }
 
 export interface DashboardStats {
