@@ -32,7 +32,8 @@ const authService = {
   getProfile: async (): Promise<LoginResponse['user']> => {
     try {
       const response = await apiClient.get<any>('/auth/profile');
-      return response.data.user || response.data;
+      const data = response.data;
+      return data.user || data.data?.user || data;
     } catch (error) {
       console.error("Get Profile Error: ", error);
       throw error;

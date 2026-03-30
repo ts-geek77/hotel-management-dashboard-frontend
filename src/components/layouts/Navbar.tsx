@@ -29,8 +29,9 @@ const Navbar = () => {
 
   const fetchProfile = async () => {
     try {
-      const data = await authService.getProfile();
-      setProfile(data);
+      const response = await authService.getProfile();
+      const data = response as any;
+      setProfile(response);
       if (data.profileImage) {
         const baseUrl = apiClient.defaults.baseURL?.replace('/api', '') || "http://localhost:5000";
         setAvatarUrl(`${baseUrl}${data.profileImage}`);

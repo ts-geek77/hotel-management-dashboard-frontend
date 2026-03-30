@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -42,13 +42,12 @@ export default function ProfilePage() {
   const [passwordForm, setPasswordForm] = useState(INITIAL_PASSWORD_FORM);
   const [showPasswords, setShowPasswords] = useState(INITIAL_SHOW_PASSWORDS);
 
-  // Sync state when profile is loaded
-  useState(() => {
+  useEffect(() => {
     if (profile) {
       setName(profile.name);
       setPhone(profile.phone || "");
     }
-  });
+  }, [profile]);
 
   const handleUpdateProfile = async () => {
     await updateProfile({ name, phone });
