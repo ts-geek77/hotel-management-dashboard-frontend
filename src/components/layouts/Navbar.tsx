@@ -9,19 +9,32 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LogOut, User as UserIcon } from "lucide-react";
+import { LogOut, User as UserIcon, Menu, X, Building2, LayoutDashboard, BedDouble, Users, CalendarCheck } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
 import { toast } from "sonner";
 import Cookies from "js-cookie";
 import authService from "@/services/auth.service";
 import apiClient from "@/services/api-client";
 import { User } from "@/types/auth";
 
+const navItems = [
+  { href: "/dashboards/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/dashboards/rooms", label: "Rooms", icon: BedDouble },
+  { href: "/dashboards/guests", label: "Guests", icon: Users },
+  { href: "/dashboards/bookings", label: "Bookings", icon: CalendarCheck },
+];
+
 const Navbar = () => {
   const router = useRouter();
   const pathname = usePathname();
   const [profile, setProfile] = useState<User | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname]);
 
   useEffect(() => {
     fetchProfile();
@@ -60,9 +73,19 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="w-full px-8 py-4 bg-[var(--surface)] border-b border-[var(--border)]">
+    <nav className="w-full px-4 lg:px-8 py-4 bg-[var(--surface)] border-b border-[var(--border)] sticky top-0 z-40">
       <div className="flex justify-between items-center w-full">
-        <h1 className="font-bold text-2xl tracking-tight text-[var(--text-primary)]">{getTitle()}</h1>
+        <div className="flex items-center gap-4">
+          <button 
+            className="lg:hidden p-2 -ml-2 rounded-md hover:bg-[var(--surface-muted)] transition-colors cursor-pointer"
+            onClick={() => setMobileMenuOpen(true)}
+          >
+            <Menu className="h-6 w-6 text-[var(--text-primary)]" />
+          </button>
+          <h1 className="font-bold text-lg lg:text-2xl tracking-tight text-[var(--text-primary)] truncate max-w-[150px] lg:max-w-none">
+            {getTitle()}
+          </h1>
+        </div>
 
         <div className="flex items-center gap-4">
           <DropdownMenu>
@@ -106,6 +129,52 @@ const Navbar = () => {
           </DropdownMenu>
         </div>
       </div>
+
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          <div 
+            className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" 
+            onClick={() => setMobileMenuOpen(false)}
+          />
+          
+          <div className="fixed inset-y-0 left-0 w-[280px] bg-[var(--sidebar-bg)] shadow-2xl flex flex-col animate-in slide-in-from-left duration-300">
+            <div className="flex items-center justify-between px-6 py-6 border-b border-slate-800/50">
+              <div className="flex items-center gap-2 text-white text-xl font-bold">
+                <Building2 size={24} className="text-[var(--brand)]" />
+                <span>HotelAdmin</span>
+              </div>
+              <button 
+                onClick={() => setMobileMenuOpen(false)}
+                className="p-2 rounded-md text-slate-400 hover:text-white hover:bg-slate-800 transition-all cursor-pointer"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="flex-1 px-4 py-6 space-y-2">
+              {navItems.map((item) => {
+                const isActive = pathname === item.href || (item.href !== "/dashboards/dashboard" && pathname.startsWith(item.href));
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 cursor-pointer ${
+                      isActive ? "bg-[var(--sidebar-active-bg)] text-[var(--brand)] font-bold" : "text-slate-400 hover:text-white hover:bg-slate-800/50"
+                    }`}
+                  >
+                    <item.icon size={20} className={isActive ? "text-[var(--brand)]" : ""} />
+                    <span>{item.label}</span>
+                  </Link>
+                );
+              })}
+            </div>
+
+            <div className="px-6 py-6 border-t border-slate-800/50">
+              <p className="text-slate-500 text-xs font-medium">© 2026 Hotel Management</p>
+            </div>
+          </div>
+        </div>
+      )}
     </nav>
   );
 };

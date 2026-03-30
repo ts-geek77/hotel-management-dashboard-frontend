@@ -25,7 +25,7 @@ const Sidebar = () => {
 
   return (
     <div
-      className="relative flex flex-col justify-between h-screen text-white transition-all duration-300 ease-in-out shrink-0"
+      className="relative hidden lg:flex flex-col justify-between h-screen sticky top-0 text-white transition-all duration-300 ease-in-out shrink-0"
       style={{
         backgroundColor: "var(--sidebar-bg)",
         width: collapsed ? "72px" : "256px",

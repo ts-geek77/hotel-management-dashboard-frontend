@@ -84,10 +84,10 @@ export default function ProfilePage() {
         <p className="text-sm" style={{ color: "var(--text-label)" }}>Update your information and manage account security.</p>
       </div>
 
-      <div className="flex items-center gap-4 border-b" style={{ borderColor: "var(--border)" }}>
+      <div className="flex items-center gap-4 border-b overflow-x-auto no-scrollbar whitespace-nowrap scrollbar-hide" style={{ borderColor: "var(--border)" }}>
         <button 
           onClick={() => setActiveTab(PROFILE_TABS.GENERAL)}
-          className={`pb-2 px-1 text-sm font-medium transition-colors border-b-2 ${
+          className={`pb-2 px-1 text-sm font-medium transition-colors border-b-2 flex-shrink-0 ${
             activeTab === PROFILE_TABS.GENERAL 
               ? "border-[var(--brand)] text-[var(--brand)]" 
               : "border-transparent hover:text-[var(--text-primary)]"
@@ -98,7 +98,7 @@ export default function ProfilePage() {
         </button>
         <button 
           onClick={() => setActiveTab(PROFILE_TABS.SECURITY)}
-          className={`pb-2 px-1 text-sm font-medium transition-colors border-b-2 ${
+          className={`pb-2 px-1 text-sm font-medium transition-colors border-b-2 flex-shrink-0 ${
             activeTab === PROFILE_TABS.SECURITY 
               ? "border-[var(--brand)] text-[var(--brand)]" 
               : "border-transparent hover:text-[var(--text-primary)]"
@@ -125,7 +125,7 @@ export default function ProfilePage() {
                 
                 <Label 
                   htmlFor="avatar-upload"
-                  className="absolute bottom-0 right-0 p-2 text-white rounded-full shadow-lg transition-all cursor-pointer hover:scale-110 active:scale-95"
+                  className="absolute bottom-0 right-0 p-2.5 sm:p-2 text-white rounded-full shadow-lg transition-all cursor-pointer hover:scale-110 active:scale-95"
                   style={{ backgroundColor: "var(--brand)" }}
                   onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--brand-hover)")}
                   onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "var(--brand)")}

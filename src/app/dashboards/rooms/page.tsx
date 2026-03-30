@@ -113,15 +113,16 @@ export default function RoomsPage() {
 
   return (
     <div className="space-y-6 p-4 min-h-screen" style={{ backgroundColor: "var(--surface-subtle)" }}>
-      <div className="flex items-start justify-between">
-        <div>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 lg:gap-0 lg:items-start">
+        <div className="flex flex-col gap-1">
+          <h1 className="text-2xl font-bold tracking-tight lg:hidden" style={{ color: "var(--text-primary)" }}>Rooms Management</h1>
           <p className="text-sm mt-0.5" style={{ color: "var(--text-muted)" }}>
             Manage hotel rooms, pricing, and availability
           </p>
         </div>
         <Button
           onClick={() => { setAddForm(DEFAULT_ROOM_FORM); setAddOpen(true); }}
-          className="flex items-center gap-2 font-semibold"
+          className="flex items-center justify-center gap-2 font-semibold w-full sm:w-auto"
           style={{ backgroundColor: "var(--brand)", color: "var(--text-on-brand)" }}
         >
           <Plus size={16} />
@@ -131,86 +132,88 @@ export default function RoomsPage() {
 
       <Card className="border-none shadow-sm ring-0 overflow-hidden" style={{ backgroundColor: "var(--surface)" }}>
         <CardContent className="p-0">
-          <Table className="w-full" style={{ tableLayout: "fixed", width: "100%" }}>
-            <colgroup>
-              <col style={{ width: "20%" }} />
-              <col style={{ width: "20%" }} />
-              <col style={{ width: "20%" }} />
-              <col style={{ width: "20%" }} />
-              <col style={{ width: "20%" }} />
-            </colgroup>
-            <TableHeader>
-              <TableRow className="hover:bg-transparent" style={{ borderColor: "var(--border)" }}>
-                <TableHead className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-center" style={{ width: "20%", color: "var(--text-label)" }}>ROOM NUMBER</TableHead>
-                <TableHead className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-center" style={{ width: "20%", color: "var(--text-label)" }}>TYPE</TableHead>
-                <TableHead className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-center" style={{ width: "20%", color: "var(--text-label)" }}>PRICE/NIGHT</TableHead>
-                <TableHead className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-center" style={{ width: "20%", color: "var(--text-label)" }}>STATUS</TableHead>
-                <TableHead className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-center" style={{ width: "20%", color: "var(--text-label)" }}>ACTIONS</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {loading ? (
-                Array.from({ length: 5 }).map((_, i) => (
-                  <TableRow key={i} style={{ borderColor: "var(--border)" }}>
-                    {Array.from({ length: 5 }).map((_, j) => (
-                      <TableCell key={j} className="px-6 py-4">
-                        <Skeleton className="h-5 w-full" />
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : rooms.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={5} className="text-center py-16 font-medium" style={{ color: "var(--text-muted)" }}>
-                    No rooms found. Click &quot;Add Room&quot; to get started.
-                  </TableCell>
+          <div className="overflow-x-auto">
+            <Table className="w-full min-w-[800px] lg:min-w-0 lg:table-fixed" style={{ width: "100%" }}>
+              <colgroup>
+                <col style={{ width: "20%" }} />
+                <col style={{ width: "20%" }} />
+                <col style={{ width: "20%" }} />
+                <col style={{ width: "20%" }} />
+                <col style={{ width: "20%" }} />
+              </colgroup>
+              <TableHeader>
+                <TableRow className="hover:bg-transparent" style={{ borderColor: "var(--border)" }}>
+                  <TableHead className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-center" style={{ width: "20%", color: "var(--text-label)" }}>ROOM NUMBER</TableHead>
+                  <TableHead className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-center" style={{ width: "20%", color: "var(--text-label)" }}>TYPE</TableHead>
+                  <TableHead className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-center" style={{ width: "20%", color: "var(--text-label)" }}>PRICE/NIGHT</TableHead>
+                  <TableHead className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-center" style={{ width: "20%", color: "var(--text-label)" }}>STATUS</TableHead>
+                  <TableHead className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-center" style={{ width: "20%", color: "var(--text-label)" }}>ACTIONS</TableHead>
                 </TableRow>
-              ) : (
-                rooms.map((room) => (
-                  <TableRow
-                    key={room.id}
-                    className="transition-colors hover:bg-[var(--surface-subtle)]"
-                    style={{ borderColor: "var(--border)" }}
-                  >
-                    <TableCell className="px-6 py-4 text-center font-semibold" style={{ color: "var(--text-primary)" }}>
-                      {room.roomNumber}
-                    </TableCell>
-                    <TableCell className="px-6 py-4 text-center font-medium" style={{ color: "var(--text-secondary)" }}>
-                      {room.roomType}
-                    </TableCell>
-                    <TableCell className="px-6 py-4 text-center font-medium" style={{ color: "var(--text-primary)" }}>
-                      ${room.price}
-                    </TableCell>
-                    <TableCell className="px-6 py-4 text-center align-middle">
-                      <div className="flex justify-center">
-                        <Badge variant="outline" className={`rounded-full px-3 py-0.5 font-medium font-bold ${ROOM_STATUS_BADGE[room.status]}`}>
-                          {room.status}
-                        </Badge>
-                      </div>
-                    </TableCell>
-                    <TableCell className="px-6 py-4 text-center align-middle">
-                      <div className="flex items-center justify-center gap-2">
-                        <button
-                          onClick={() => openEdit(room)}
-                          className="p-1.5 rounded-md transition-colors hover:bg-blue-50"
-                          title="Edit Room"
-                        >
-                          <Pencil size={15} className="text-primary" />
-                        </button>
-                        <button
-                          onClick={() => openDelete(room)}
-                          className="p-1.5 rounded-md transition-colors hover:bg-red-50"
-                          title="Delete Room"
-                        >
-                          <Trash2 size={15} className="text-red-500" />
-                        </button>
-                      </div>
+              </TableHeader>
+              <TableBody>
+                {loading ? (
+                  Array.from({ length: 5 }).map((_, i) => (
+                    <TableRow key={i} style={{ borderColor: "var(--border)" }}>
+                      {Array.from({ length: 5 }).map((_, j) => (
+                        <TableCell key={j} className="px-6 py-4">
+                          <Skeleton className="h-5 w-full" />
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : rooms.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center py-16 font-medium" style={{ color: "var(--text-muted)" }}>
+                      No rooms found. Click &quot;Add Room&quot; to get started.
                     </TableCell>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+                ) : (
+                  rooms.map((room) => (
+                    <TableRow
+                      key={room.id}
+                      className="transition-colors hover:bg-[var(--surface-subtle)]"
+                      style={{ borderColor: "var(--border)" }}
+                    >
+                      <TableCell className="px-6 py-4 text-center font-semibold" style={{ color: "var(--text-primary)" }}>
+                        {room.roomNumber}
+                      </TableCell>
+                      <TableCell className="px-6 py-4 text-center font-medium" style={{ color: "var(--text-secondary)" }}>
+                        {room.roomType}
+                      </TableCell>
+                      <TableCell className="px-6 py-4 text-center font-medium" style={{ color: "var(--text-primary)" }}>
+                        ${room.price}
+                      </TableCell>
+                      <TableCell className="px-6 py-4 text-center align-middle">
+                        <div className="flex justify-center">
+                          <Badge variant="outline" className={`rounded-full px-3 py-0.5 font-medium font-bold ${ROOM_STATUS_BADGE[room.status]}`}>
+                            {room.status}
+                          </Badge>
+                        </div>
+                      </TableCell>
+                      <TableCell className="px-6 py-4 text-center align-middle">
+                        <div className="flex items-center justify-center gap-2">
+                          <button
+                            onClick={() => openEdit(room)}
+                            className="p-1.5 rounded-md transition-colors hover:bg-blue-50"
+                            title="Edit Room"
+                          >
+                            <Pencil size={15} className="text-primary" />
+                          </button>
+                          <button
+                            onClick={() => openDelete(room)}
+                            className="p-1.5 rounded-md transition-colors hover:bg-red-50"
+                            title="Delete Room"
+                          >
+                            <Trash2 size={15} className="text-red-500" />
+                          </button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
 

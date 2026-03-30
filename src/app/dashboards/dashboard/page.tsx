@@ -102,6 +102,10 @@ const DashboardPage = () => {
 
   return (
     <div className="space-y-4 p-4 min-h-screen" style={{ backgroundColor: "var(--surface-subtle)" }}>
+      <div className="flex flex-col lg:hidden mb-2">
+        <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">Dashboard Overview</h1>
+        <p className="text-sm text-[var(--text-muted)]">Real-time status of your hotel operations</p>
+      </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
@@ -229,7 +233,8 @@ const DashboardPage = () => {
           </Link>
         </CardHeader>
         <CardContent className="p-0">
-          <Table className="w-full" style={{ tableLayout: "fixed", width: "100%" }}>
+          <div className="overflow-x-auto">
+            <Table className="w-full min-w-[800px] lg:min-w-0 lg:table-fixed" style={{ width: "100%" }}>
             <colgroup>
               <col style={{ width: "20%" }} />
               <col style={{ width: "20%" }} />
@@ -284,6 +289,7 @@ const DashboardPage = () => {
               )}
             </TableBody>
           </Table>
+          </div>
         </CardContent>
       </Card>
 

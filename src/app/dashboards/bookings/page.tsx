@@ -307,7 +307,7 @@ export default function BookingsPage() {
           handleDayClick(day.date);
         }}
         className={`
-          w-full h-[100px] flex flex-col items-start p-2
+          w-full h-[80px] sm:h-[100px] flex flex-col items-start p-2
           transition-all hover:bg-slate-50/50 hover:cursor-pointer focus:outline-none bg-surface
           border border-border shadow-sm rounded-xl
           ${isOutside ? "bg-slate-50/10 opacity-30 grayscale" : ""}
@@ -349,13 +349,17 @@ export default function BookingsPage() {
 
   return (
     <div className="w-full space-y-4 p-6 min-h-screen bg-slate-50/50 text-text-primary">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center border border-border rounded-lg p-0.5 bg-surface shadow-sm overflow-hidden">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex flex-col lg:hidden">
+          <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">Bookings Management</h1>
+          <p className="text-sm text-[var(--text-muted)]">Real-time status of your hotel operations</p>
+        </div>
+        <div className="flex items-center border border-border rounded-lg p-0.5 bg-surface shadow-sm overflow-hidden w-full sm:w-auto">
           <Button
             variant="ghost"
             size="sm"
             onClick={() => setView("calendar")}
-            className={`h-8 px-4 cursor-pointer rounded-md transition-all ${
+            className={`h-8 flex-1 sm:px-4 cursor-pointer rounded-md transition-all ${
               view === "calendar" ? "bg-slate-100 shadow-sm font-bold text-text-primary" : "text-text-muted hover:text-text-secondary"
             }`}
           >
@@ -365,7 +369,7 @@ export default function BookingsPage() {
             variant="ghost"
             size="sm"
             onClick={() => setView("table")}
-            className={`h-8 px-4 cursor-pointer rounded-md transition-all ${
+            className={`h-8 flex-1 sm:px-4 cursor-pointer rounded-md transition-all ${
               view === "table" ? "bg-slate-100 shadow-sm font-bold text-text-primary" : "text-text-muted hover:text-text-secondary"
             }`}
           >
@@ -375,11 +379,11 @@ export default function BookingsPage() {
 
         <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-brand hover:bg-brand-hover text-white cursor-pointer font-bold px-6 shadow-md rounded-lg h-11 transition-all active:scale-95">
+            <Button className="w-full sm:w-auto bg-brand hover:bg-brand-hover text-white cursor-pointer font-bold px-6 shadow-md rounded-lg h-11 transition-all active:scale-95">
               <Plus className="mr-2 h-4 w-4 text-white" /> New Booking
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-lg p-0 overflow-hidden border-none rounded-2xl bg-surface">
+          <DialogContent className="sm:max-w-lg w-[95vw] sm:w-full p-0 overflow-hidden border-none rounded-2xl bg-surface">
             <DialogHeader className="p-8 pb-2">
               <DialogTitle className="text-xl font-bold text-text-primary">Create New Booking</DialogTitle>
             </DialogHeader>
@@ -542,9 +546,9 @@ export default function BookingsPage() {
                 formatWeekdayName: (date) => format(date, "EEE"),
               }}
               classNames={{
-                root: "w-full block",
+                root: "w-full block overflow-x-auto pb-4",
                 month_caption: "hidden",
-                month_grid: "w-full p-3",
+                month_grid: "w-full p-3 min-w-[800px] lg:min-w-0",
                 month: "w-full",
                 table: "w-full border-separate border-spacing-2 overflow-hidden",
                 row: "flex w-full mb-0.5",
@@ -571,7 +575,8 @@ export default function BookingsPage() {
         )
       ) : (
         <div className="rounded-xl border border-border shadow-sm overflow-hidden bg-surface">
-          <Table>
+          <div className="overflow-x-auto">
+            <Table className="min-w-[900px] lg:min-w-0 lg:table-fixed">
             <TableHeader className="bg-surface-muted">
               <TableRow className="hover:bg-transparent border-border">
                 <TableHead className="w-[18%] px-6 py-4 text-[10px] font-bold uppercase tracking-wider text-center text-text-label">Guest</TableHead>
@@ -645,6 +650,7 @@ export default function BookingsPage() {
               )}
             </TableBody>
           </Table>
+          </div>
         </div>
       )}
 
@@ -657,7 +663,7 @@ export default function BookingsPage() {
           <div className="p-8 pt-6 space-y-8">
             {editBooking && (
               <>
-                <div className="grid grid-cols-2 gap-x-12 gap-y-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-6">
                   <div className="space-y-1">
                     <p className="text-[11px] font-bold text-text-label uppercase tracking-wider">Guest</p>
                     <p className="text-base font-semibold text-text-secondary">{guestLookup[editBooking.guestId]?.name ?? 'Unknown'}</p>
@@ -676,8 +682,8 @@ export default function BookingsPage() {
                   </div>
                 </div>
 
-                <div className="flex items-end justify-between pt-4">
-                  <div className="space-y-2 w-[240px]">
+                <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 sm:gap-0 pt-4">
+                  <div className="space-y-2 w-full sm:w-[240px]">
                     <p className="text-[11px] font-bold text-text-label uppercase tracking-wider">Status</p>
                     <Select 
                       defaultValue={editBooking.status}
