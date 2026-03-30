@@ -20,6 +20,11 @@ const guestService = {
     const response = await apiClient.get<Booking[]>(`/bookings?guestId=${id}`);
     return response.data;
   },
+
+  createGuest: async (data: Omit<Guest, "id">) => {
+    const response = await apiClient.post<Guest>("/guests", data);
+    return response.data;
+  },
 };
 
 export default guestService;

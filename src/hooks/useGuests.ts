@@ -12,6 +12,8 @@ export const useGuests = () => {
   const [guestHistory, setGuestHistory] = useState<Booking[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [isAddOpen, setIsAddOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const roomMap = useMemo(() => {
     return rooms.reduce((acc, room) => ({ ...acc, [room.id]: room.roomNumber }), {} as Record<number, string>);
@@ -37,7 +39,6 @@ export const useGuests = () => {
     setLoadingHistory(true);
     try {
       const allHistory = await guestService.getGuestHistory(guestId);
-      // Ensure we only show bookings for this specific guest
       const filteredHistory = allHistory.filter((b: Booking) => b.guestId === guestId);
       setGuestHistory(filteredHistory);
     } catch (error) {
@@ -59,6 +60,25 @@ export const useGuests = () => {
     setGuestHistory([]);
   };
 
+  const openAdd = () => setIsAddOpen(true);
+  const closeAdd = () => setIsAddOpen(false);
+
+  const handleAddGuest = async (guestData: Omit<Guest, "id">) => {
+    try {
+      setSaving(true);
+      await guestService.createGuest(guestData);
+      toast.success("Guest added successfully");
+      setIsAddOpen(false);
+      fetchData();
+      return true;
+    } catch (error) {
+      toast.error("Failed to add guest");
+      return false;
+    } finally {
+      setSaving(false);
+    }
+  };
+
   useEffect(() => {
     fetchData();
   }, [fetchData]);
@@ -66,13 +86,18 @@ export const useGuests = () => {
   return {
     guests,
     loading,
+    saving,
     selectedGuest,
     guestHistory,
     loadingHistory,
     isDetailOpen,
+    isAddOpen,
     roomMap,
     handleViewDetails,
     closeDetail,
+    openAdd,
+    closeAdd,
+    handleAddGuest,
     refreshGuests: fetchData,
   };
 };

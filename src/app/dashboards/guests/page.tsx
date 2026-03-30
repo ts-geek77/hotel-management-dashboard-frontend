@@ -1,9 +1,9 @@
 "use client";
 
-import { Eye, Loader2 } from "lucide-react";
-import { 
-  useGuests 
-} from "@/hooks";
+import { useState } from "react";
+import { Eye, Loader2, Plus } from "lucide-react";
+import { useGuests } from "@/hooks";
+import { Guest } from "@/types";
 import { 
   GUEST_LABELS,
   BOOKING_BADGE_STYLES,
@@ -25,6 +25,10 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { DialogFooter } from "@/components/ui/dialog";
 
 export default function GuestsPage() {
   const {
@@ -34,16 +38,42 @@ export default function GuestsPage() {
     guestHistory,
     loadingHistory,
     isDetailOpen,
+    isAddOpen,
+    saving,
     handleViewDetails,
     closeDetail,
+    openAdd,
+    closeAdd,
+    handleAddGuest,
   } = useGuests();
+
+  const [addForm, setAddForm] = useState({ name: "", email: "", phone: "" });
 
   const toDateInput = (dateStr: string) => dateStr?.slice(0, 10) ?? "";
 
+  const onAddSubmit = async () => {
+    const success = await handleAddGuest(addForm as Omit<Guest, "id">);
+    if (success) {
+      setAddForm({ name: "", email: "", phone: "" });
+    }
+  };
+
   return (
     <div className="space-y-6 p-6 min-h-screen" style={{ backgroundColor: "var(--surface-subtle)" }}>
-      <div className="flex flex-col gap-1">
-        <p className="text-sm" style={{ color: "var(--text-label)" }}>View guest information and booking history</p>
+      <div className="flex items-start justify-between">
+        <div className="flex flex-col gap-1">
+          <p className="text-sm mt-0.5" style={{ color: "var(--text-muted)" }}>
+            View guest information and booking history
+          </p>
+        </div>
+        <Button
+          onClick={openAdd}
+          className="flex items-center gap-2 font-semibold"
+          style={{ backgroundColor: "var(--brand)", color: "var(--text-on-brand)" }}
+        >
+          <Plus size={16} />
+          Add Guest
+        </Button>
       </div>
 
       <div className="rounded-xl border shadow-sm overflow-hidden" style={{ backgroundColor: "var(--surface)", borderColor: "var(--border)" }}>
@@ -160,6 +190,48 @@ export default function GuestsPage() {
               </div>
             </div>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isAddOpen} onOpenChange={closeAdd}>
+        <DialogContent className="sm:max-w-md" style={{ backgroundColor: "var(--surface-solid)" }}>
+          <DialogHeader>
+            <DialogTitle style={{ color: "var(--text-primary)" }}>Add New Guest</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-1.5">
+              <Label style={{ color: "var(--text-secondary)" }}>Name</Label>
+              <Input
+                placeholder="e.g. John Doe"
+                value={addForm.name}
+                onChange={(e) => setAddForm((f) => ({ ...f, name: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label style={{ color: "var(--text-secondary)" }}>Email Address</Label>
+              <Input
+                type="email"
+                placeholder="e.g. john@example.com"
+                value={addForm.email}
+                onChange={(e) => setAddForm((f) => ({ ...f, email: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label style={{ color: "var(--text-secondary)" }}>Phone Number</Label>
+              <Input
+                type="tel"
+                placeholder="e.g. +1 555-0123"
+                value={addForm.phone}
+                onChange={(e) => setAddForm((f) => ({ ...f, phone: e.target.value }))}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={closeAdd} disabled={saving}>Cancel</Button>
+            <Button onClick={onAddSubmit} disabled={saving} style={{ backgroundColor: "var(--brand)", color: "#fff" }}>
+              {saving ? "Saving..." : "Add Guest"}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
