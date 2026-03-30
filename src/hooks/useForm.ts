@@ -69,19 +69,35 @@ const useForm = <T extends AnyObject>({
     },
   });
 
-  const errors = formik.errors as FieldErrors<T>;
-  const touched = formik.touched as FieldTouched<T>;
+  const errors = React.useMemo(() => formik.errors as FieldErrors<T>, [formik.errors]);
+  const touched = React.useMemo(() => formik.touched as FieldTouched<T>, [formik.touched]);
 
-  const setFieldValue = (name: keyof T, value: unknown) => {
+  const setFieldValue = React.useCallback((name: keyof T, value: unknown) => {
     formik.setFieldValue(name as string, value, true);
     formik.setFieldTouched(name as string, true, false);
-  };
+  }, [formik.setFieldValue, formik.setFieldTouched]);
 
-  const reset = () => {
+  const reset = React.useCallback(() => {
     formik.resetForm();
     setFormError("");
     setFormSuccess("");
-  };
+  }, [formik.resetForm]);
+
+  const handleChange = React.useCallback((
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
+    formik.handleChange(e);
+  }, [formik.handleChange]);
+
+  const handleBlur = React.useCallback((
+    e: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
+    formik.handleBlur(e);
+  }, [formik.handleBlur]);
+
+  const handleSubmit = React.useCallback((e: React.FormEvent<HTMLFormElement>) => {
+    formik.handleSubmit(e);
+  }, [formik.handleSubmit]);
 
   return {
     values: formik.values,
@@ -90,9 +106,9 @@ const useForm = <T extends AnyObject>({
     formError,
     formSuccess,
     isSubmitting: formik.isSubmitting,
-    handleChange: formik.handleChange,
-    handleBlur: formik.handleBlur,
-    handleSubmit: formik.handleSubmit,
+    handleChange,
+    handleBlur,
+    handleSubmit,
     setFormError,
     setFormSuccess,
     setFieldValue,

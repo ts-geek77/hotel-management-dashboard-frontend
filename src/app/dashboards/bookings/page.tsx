@@ -2,8 +2,10 @@
 
 import { useBookings } from "@/hooks/useBookings";
 import { Booking, Guest, Room } from "@/types";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import type { DayButtonProps } from "react-day-picker";
+import * as Yup from "yup";
+import useForm from "@/hooks/useForm";
 
 import {
   AlertDialog,
@@ -69,10 +71,15 @@ import {
   MONTHS
 } from "@/constants";
 
-const toDateStr = (d: Date) =>
-  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+const toDateStr = (d: Date | null | undefined) => {
+  if (!d || isNaN(d.getTime())) return "";
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+};
 
-const toDateInput = (s: string) => s?.slice(0, 10) ?? "";
+const toDateInput = (s: string | null | undefined) => {
+  if (typeof s !== "string") return "";
+  return s.slice(0, 10);
+};
 
 interface DayDetailProps {
   date: Date;
@@ -87,6 +94,8 @@ const DayDetailContent = ({
   guestMap,
   roomMap,
 }: DayDetailProps) => {
+  if (!date || isNaN(date.getTime())) return null;
+
   const label = date.toLocaleDateString("en-IN", {
     weekday: "long",
     year: "numeric",
@@ -168,6 +177,20 @@ const DayDetailContent = ({
   );
 };
 
+const BOOKING_SCHEMA = Yup.object().shape({
+  guestId: Yup.number().required("Guest is required").positive("Invalid guest"),
+  roomId: Yup.number().required("Room is required").positive("Invalid room"),
+  checkIn: Yup.string().required("Check-in date is required"),
+  checkOut: Yup.string()
+    .required("Check-out date is required")
+    .test("is-after-checkin", "Check-out must be after check-in", function(val) {
+      const { checkIn } = this.parent;
+      if (!checkIn || !val) return true;
+      return new Date(val) > new Date(checkIn);
+    }),
+  status: Yup.string().required("Status is required") as Yup.Schema<Booking["status"]>,
+});
+
 export default function BookingsPage() {
   const {
     bookings,
@@ -188,6 +211,46 @@ export default function BookingsPage() {
   const [editBooking, setEditBooking] = useState<Booking | null>(null);
 
   const todayStr = useMemo(() => new Date().toISOString().split('T')[0], []);
+
+  const initialValues = useMemo(() => ({
+    guestId: "" as unknown as number,
+    roomId: "" as unknown as number,
+    checkIn: "",
+    checkOut: "",
+    status: "Booked" as Booking["status"],
+  }), []);
+
+  const handleSubmitBooking = useCallback(async (data: any) => {
+    await handleCreateBooking({
+      guestId: Number(data.guestId),
+      roomId: Number(data.roomId),
+      checkIn: data.checkIn,
+      checkOut: data.checkOut,
+      status: data.status,
+    });
+    setCreateDialogOpen(false);
+  }, [handleCreateBooking]);
+
+  const {
+    values,
+    errors,
+    touched,
+    isSubmitting,
+    handleChange,
+    setFieldValue,
+    handleSubmit,
+    reset,
+  } = useForm({
+    initialValues,
+    schema: BOOKING_SCHEMA,
+    onSubmit: handleSubmitBooking,
+  });
+
+  useEffect(() => {
+    if (!createDialogOpen) {
+      reset();
+    }
+  }, [createDialogOpen, reset]);
 
   const bookingsByDate = useMemo(() => {
     const map: Record<string, Booking[]> = {};
@@ -222,9 +285,11 @@ export default function BookingsPage() {
     setDayDialogOpen(true);
   };
 
-  const selectedDayBookings = selectedDate
-    ? (bookingsByDate[toDateStr(selectedDate)] ?? [])
-    : [];
+  const selectedDayBookings = useMemo(() => {
+    if (!selectedDate) return [];
+    const key = toDateStr(selectedDate);
+    return bookingsByDate[key] ?? [];
+  }, [selectedDate, bookingsByDate]);
 
   const CustomDayButton = (props: DayButtonProps) => {
     const { day, modifiers, ...buttonProps } = props;
@@ -236,13 +301,18 @@ export default function BookingsPage() {
     return (
       <button
         {...buttonProps}
-        onClick={() => handleDayClick(day.date)}
+        type="button"
+        onClick={(e) => {
+          props.onClick?.(e);
+          handleDayClick(day.date);
+        }}
         className={`
           w-full h-[100px] flex flex-col items-start p-2
           transition-all hover:bg-slate-50/50 hover:cursor-pointer focus:outline-none bg-surface
           border border-border shadow-sm rounded-xl
           ${isOutside ? "bg-slate-50/10 opacity-30 grayscale" : ""}
           ${isToday ? "border-brand border-2" : ""}
+          ${modifiers?.selected ? "ring-2 ring-brand" : ""}
         `}
       >
         <span
@@ -254,7 +324,7 @@ export default function BookingsPage() {
           {day.date.getDate()}
         </span>
 
-        <div className="w-full space-y-1 flex-1 overflow-hidden px-0.5">
+        <div className="w-full space-y-1 flex-1 overflow-hidden px-0.5 text-left">
           {dayBookings.slice(0, 2).map((b) => (
             <div
               key={b.id}
@@ -314,22 +384,15 @@ export default function BookingsPage() {
               <DialogTitle className="text-xl font-bold text-text-primary">Create New Booking</DialogTitle>
             </DialogHeader>
 
-            <form onSubmit={async (e) => {
-              e.preventDefault();
-              const formData = new FormData(e.currentTarget);
-              await handleCreateBooking({
-                guestId: parseInt(formData.get("guestId") as string),
-                roomId: parseInt(formData.get("roomId") as string),
-                checkIn: formData.get("checkIn") as string,
-                checkOut: formData.get("checkOut") as string,
-                status: formData.get("status") as Booking["status"],
-              });
-              setCreateDialogOpen(false);
-            }} className="p-8 pt-6 space-y-6">
+            <form onSubmit={handleSubmit} className="p-8 pt-6 space-y-6">
               <div className="space-y-2">
                 <Label className="text-[11px] font-bold text-text-label uppercase tracking-wider">Guest</Label>
-                <Select name="guestId" required>
-                  <SelectTrigger className="bg-surface-muted/50 border-border h-12 rounded-xl focus:ring-brand">
+                <Select 
+                  name="guestId" 
+                  value={values.guestId ? values.guestId.toString() : ""} 
+                  onValueChange={(val) => setFieldValue("guestId", Number(val))}
+                >
+                  <SelectTrigger className={`bg-surface-muted/50 border-border h-12 rounded-xl focus:ring-brand ${touched.guestId && errors.guestId ? 'border-error ring-error ring-1' : ''}`}>
                     <SelectValue placeholder="Select a guest" />
                   </SelectTrigger>
                   <SelectContent className="rounded-xl border-border shadow-xl bg-surface">
@@ -338,12 +401,17 @@ export default function BookingsPage() {
                     ))}
                   </SelectContent>
                 </Select>
+                {touched.guestId && errors.guestId && <p className="text-xs text-error mt-1">{errors.guestId}</p>}
               </div>
 
               <div className="space-y-2">
                 <Label className="text-[11px] font-bold text-text-label uppercase tracking-wider">Room</Label>
-                <Select name="roomId" required>
-                  <SelectTrigger className="bg-surface-muted/50 border-border h-12 rounded-xl focus:ring-brand">
+                <Select 
+                  name="roomId" 
+                  value={values.roomId ? values.roomId.toString() : ""} 
+                  onValueChange={(val) => setFieldValue("roomId", Number(val))}
+                >
+                  <SelectTrigger className={`bg-surface-muted/50 border-border h-12 rounded-xl focus:ring-brand ${touched.roomId && errors.roomId ? 'border-error ring-error ring-1' : ''}`}>
                     <SelectValue placeholder="Select a room" />
                   </SelectTrigger>
                   <SelectContent className="rounded-xl border-border shadow-xl bg-surface">
@@ -352,23 +420,44 @@ export default function BookingsPage() {
                     ))}
                   </SelectContent>
                 </Select>
+                {touched.roomId && errors.roomId && <p className="text-xs text-error mt-1">{errors.roomId}</p>}
               </div>
 
               <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label className="text-[11px] font-bold text-text-label uppercase tracking-wider">Check-In</Label>
-                  <Input type="date" name="checkIn" required min={todayStr} className="bg-surface-muted/50 border-border h-12 rounded-xl focus:ring-brand" />
+                  <Input 
+                    type="date" 
+                    name="checkIn" 
+                    min={todayStr} 
+                    value={values.checkIn}
+                    onChange={handleChange}
+                    className={`bg-surface-muted/50 border-border h-12 rounded-xl focus:ring-brand ${touched.checkIn && errors.checkIn ? 'border-error ring-error ring-1' : ''}`} 
+                  />
+                  {touched.checkIn && errors.checkIn && <p className="text-xs text-error mt-1">{errors.checkIn}</p>}
                 </div>
                 <div className="space-y-2">
                   <Label className="text-[11px] font-bold text-text-label uppercase tracking-wider">Check-Out</Label>
-                  <Input type="date" name="checkOut" required min={todayStr} className="bg-surface-muted/50 border-border h-12 rounded-xl focus:ring-brand" />
+                  <Input 
+                    type="date" 
+                    name="checkOut" 
+                    min={todayStr} 
+                    value={values.checkOut}
+                    onChange={handleChange}
+                    className={`bg-surface-muted/50 border-border h-12 rounded-xl focus:ring-brand ${touched.checkOut && errors.checkOut ? 'border-error ring-error ring-1' : ''}`} 
+                  />
+                  {touched.checkOut && errors.checkOut && <p className="text-xs text-error mt-1">{errors.checkOut}</p>}
                 </div>
               </div>
 
               <div className="space-y-2">
                 <Label className="text-[11px] font-bold text-text-label uppercase tracking-wider">Status</Label>
-                <Select name="status" defaultValue="Booked">
-                  <SelectTrigger className="bg-surface-muted/50 border-border h-12 rounded-xl focus:ring-brand">
+                <Select 
+                  name="status" 
+                  value={values.status} 
+                  onValueChange={(val) => setFieldValue("status", val)}
+                >
+                  <SelectTrigger className={`bg-surface-muted/50 border-border h-12 rounded-xl focus:ring-brand ${touched.status && errors.status ? 'border-error ring-error ring-1' : ''}`}>
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
                   <SelectContent className="rounded-xl border-border shadow-xl bg-surface">
@@ -377,11 +466,14 @@ export default function BookingsPage() {
                     ))}
                   </SelectContent>
                 </Select>
+                {touched.status && errors.status && <p className="text-xs text-error mt-1">{errors.status}</p>}
               </div>
 
               <div className="pt-6 flex gap-4">
-                <Button type="button" variant="outline" onClick={() => setCreateDialogOpen(false)} className="flex-1 h-12 font-bold rounded-xl border-border text-text-secondary">Cancel</Button>
-                <Button type="submit" className="flex-1 h-12 font-bold bg-brand hover:bg-brand-hover text-white rounded-xl shadow-lg shadow-brand/10 transition-all active:scale-95">Create Booking</Button>
+                <Button type="button" variant="outline" onClick={() => { setCreateDialogOpen(false); reset(); }} disabled={isSubmitting} className="flex-1 h-12 font-bold rounded-xl border-border text-text-secondary">Cancel</Button>
+                <Button type="submit" disabled={isSubmitting} className="flex-1 h-12 font-bold bg-brand hover:bg-brand-hover text-white rounded-xl shadow-lg shadow-brand/10 transition-all active:scale-95">
+                  {isSubmitting ? "Creating..." : "Create Booking"}
+                </Button>
               </div>
             </form>
           </DialogContent>
@@ -518,8 +610,10 @@ export default function BookingsPage() {
                         <Button 
                           variant="ghost" 
                           size="icon-sm"
-                          onClick={() => setEditBooking(booking)}
-                          className="p-1 rounded-md transition-colors hover:bg-surface-muted group cursor-pointer"
+                          onClick={() => {
+                            if (booking) setEditBooking(booking);
+                          }}
+                          className="p-1 h-8 w-8 rounded-md transition-colors hover:bg-surface-muted group cursor-pointer"
                         >
                           <Eye size={18} className="text-text-secondary group-hover:text-brand" />
                         </Button>
