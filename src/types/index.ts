@@ -32,3 +32,33 @@ export interface DashboardStats {
   activeBookings: number;
   checkedInGuests: number;
 }
+
+export interface RevenueTrend {
+  date: string;
+  revenue: number;
+}
+
+export interface DashboardRecentBooking {
+  id: number;
+  guestId: number;
+  guestName: string | null;
+  roomId: number;
+  roomType: string;
+  checkIn: string;
+  checkOut: string;
+  status: "Booked" | "Checked In" | "Checked Out" | "Cancelled";
+  price: string;
+}
+
+export interface RoomStatusItem {
+  roomNumber: string;
+  roomType: string;
+  status: "Available" | "Booked" | "Maintenance";
+}
+
+export interface DashboardData {
+  stats: DashboardStats;
+  revenueTrends: RevenueTrend[];
+  recentBookings: DashboardRecentBooking[];
+  roomStatus: RoomStatusItem[];
+}
