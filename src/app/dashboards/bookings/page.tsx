@@ -29,14 +29,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { FormFieldLabel, FormFieldSelect } from "@/components/ui/form-field";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -389,47 +382,30 @@ export default function BookingsPage() {
             </DialogHeader>
 
             <form onSubmit={handleSubmit} className="p-8 pt-6 space-y-6">
-              <div className="space-y-2">
-                <Label className="text-[11px] font-bold text-text-label uppercase tracking-wider">Guest</Label>
-                <Select 
-                  name="guestId" 
-                  value={values.guestId ? values.guestId.toString() : ""} 
-                  onValueChange={(val) => setFieldValue("guestId", Number(val))}
-                >
-                  <SelectTrigger className={`bg-surface-muted/50 border-border h-12 rounded-xl focus:ring-brand ${touched.guestId && errors.guestId ? 'border-error ring-error ring-1' : ''}`}>
-                    <SelectValue placeholder="Select a guest" />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-xl border-border shadow-xl bg-surface">
-                    {guests.map((g) => (
-                      <SelectItem key={g.id} value={g.id.toString()} className="font-medium focus:bg-brand-light">{g.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {touched.guestId && errors.guestId && <p className="text-xs text-error mt-1">{errors.guestId}</p>}
-              </div>
+              <FormFieldSelect
+                label="Guest"
+                value={values.guestId ? values.guestId.toString() : ""}
+                onValueChange={(val) => setFieldValue("guestId", Number(val))}
+                placeholder="Select a guest"
+                options={guests.map((g) => ({ value: g.id.toString(), label: g.name }))}
+                error={touched.guestId ? (errors.guestId as string) : undefined}
+              />
 
-              <div className="space-y-2">
-                <Label className="text-[11px] font-bold text-text-label uppercase tracking-wider">Room</Label>
-                <Select 
-                  name="roomId" 
-                  value={values.roomId ? values.roomId.toString() : ""} 
-                  onValueChange={(val) => setFieldValue("roomId", Number(val))}
-                >
-                  <SelectTrigger className={`bg-surface-muted/50 border-border h-12 rounded-xl focus:ring-brand ${touched.roomId && errors.roomId ? 'border-error ring-error ring-1' : ''}`}>
-                    <SelectValue placeholder="Select a room" />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-xl border-border shadow-xl bg-surface">
-                    {rooms.filter(r => r.status === "Available").map((r) => (
-                      <SelectItem key={r.id} value={r.id.toString()} className="font-medium focus:bg-brand-light">Room {r.roomNumber} ({r.roomType})</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {touched.roomId && errors.roomId && <p className="text-xs text-error mt-1">{errors.roomId}</p>}
-              </div>
+              <FormFieldSelect
+                label="Room"
+                value={values.roomId ? values.roomId.toString() : ""}
+                onValueChange={(val) => setFieldValue("roomId", Number(val))}
+                placeholder="Select a room"
+                options={rooms.filter(r => r.status === "Available").map((r) => ({ 
+                  value: r.id.toString(), 
+                  label: `Room ${r.roomNumber} (${r.roomType})` 
+                }))}
+                error={touched.roomId ? (errors.roomId as string) : undefined}
+              />
 
               <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label className="text-[11px] font-bold text-text-label uppercase tracking-wider">Check-In</Label>
+                  <FormFieldLabel>Check-In</FormFieldLabel>
                   <Input 
                     type="date" 
                     name="checkIn" 
@@ -438,10 +414,10 @@ export default function BookingsPage() {
                     onChange={handleChange}
                     className={`bg-surface-muted/50 border-border h-12 rounded-xl focus:ring-brand ${touched.checkIn && errors.checkIn ? 'border-error ring-error ring-1' : ''}`} 
                   />
-                  {touched.checkIn && errors.checkIn && <p className="text-xs text-error mt-1">{errors.checkIn}</p>}
+                  {touched.checkIn && errors.checkIn && <p className="text-xs text-error mt-1">{errors.checkIn as string}</p>}
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-[11px] font-bold text-text-label uppercase tracking-wider">Check-Out</Label>
+                  <FormFieldLabel>Check-Out</FormFieldLabel>
                   <Input 
                     type="date" 
                     name="checkOut" 
@@ -450,28 +426,18 @@ export default function BookingsPage() {
                     onChange={handleChange}
                     className={`bg-surface-muted/50 border-border h-12 rounded-xl focus:ring-brand ${touched.checkOut && errors.checkOut ? 'border-error ring-error ring-1' : ''}`} 
                   />
-                  {touched.checkOut && errors.checkOut && <p className="text-xs text-error mt-1">{errors.checkOut}</p>}
+                  {touched.checkOut && errors.checkOut && <p className="text-xs text-error mt-1">{errors.checkOut as string}</p>}
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label className="text-[11px] font-bold text-text-label uppercase tracking-wider">Status</Label>
-                <Select 
-                  name="status" 
-                  value={values.status} 
-                  onValueChange={(val) => setFieldValue("status", val)}
-                >
-                  <SelectTrigger className={`bg-surface-muted/50 border-border h-12 rounded-xl focus:ring-brand ${touched.status && errors.status ? 'border-error ring-error ring-1' : ''}`}>
-                    <SelectValue placeholder="Select status" />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-xl border-border shadow-xl bg-surface">
-                    {BOOKING_STATUSES.map(s => (
-                      <SelectItem key={s} value={s} className="font-medium focus:bg-brand-light">{BOOKING_LABELS[s]}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {touched.status && errors.status && <p className="text-xs text-error mt-1">{errors.status}</p>}
-              </div>
+              <FormFieldSelect
+                label="Status"
+                value={values.status}
+                onValueChange={(val) => setFieldValue("status", val)}
+                placeholder="Select status"
+                options={BOOKING_STATUSES.map(s => ({ value: s, label: BOOKING_LABELS[s] }))}
+                error={touched.status ? (errors.status as string) : undefined}
+              />
 
               <div className="pt-6 flex gap-4">
                 <Button type="button" variant="outline" onClick={() => { setCreateDialogOpen(false); reset(); }} disabled={isSubmitting} className="flex-1 h-12 font-bold rounded-xl border-border text-text-secondary">Cancel</Button>
@@ -683,22 +649,13 @@ export default function BookingsPage() {
                 </div>
 
                 <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 sm:gap-0 pt-4">
-                  <div className="space-y-2 w-full sm:w-[240px]">
-                    <p className="text-[11px] font-bold text-text-label uppercase tracking-wider">Status</p>
-                    <Select 
-                      defaultValue={editBooking.status}
-                      onValueChange={(val) => handleUpdateStatus(editBooking.id, val as Booking["status"])}
-                    >
-                      <SelectTrigger className="h-12 border-brand/30 bg-brand-light text-brand font-semibold rounded-xl focus:ring-brand">
-                        <SelectValue placeholder="Select status" />
-                      </SelectTrigger>
-                      <SelectContent className="rounded-xl border-border shadow-xl bg-surface">
-                        {BOOKING_STATUSES.map(s => (
-                          <SelectItem key={s} value={s} className="font-medium text-text-secondary focus:bg-brand-light focus:text-brand">{BOOKING_LABELS[s]}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  <FormFieldSelect
+                    label="Status"
+                    value={editBooking.status}
+                    onValueChange={(val) => handleUpdateStatus(editBooking.id, val as Booking["status"])}
+                    options={BOOKING_STATUSES.map(s => ({ value: s, label: BOOKING_LABELS[s] }))}
+                    triggerClassName="border-brand/30 bg-brand-light text-brand font-semibold"
+                  />
 
                   <Button 
                     variant="destructive"

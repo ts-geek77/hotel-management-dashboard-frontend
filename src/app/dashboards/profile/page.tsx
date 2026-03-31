@@ -11,7 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { FormFieldLabel } from "@/components/ui/form-field";
 import { User, Mail, Loader2, Camera, Phone, Lock, Eye, EyeOff } from "lucide-react";
 import { useProfile } from "@/hooks";
 import {
@@ -123,7 +123,7 @@ export default function ProfilePage() {
                   </AvatarFallback>
                 </Avatar>
                 
-                <Label 
+                <FormFieldLabel 
                   htmlFor="avatar-upload"
                   className="absolute bottom-0 right-0 p-2.5 sm:p-2 text-white rounded-full shadow-lg transition-all cursor-pointer hover:scale-110 active:scale-95"
                   style={{ backgroundColor: "var(--brand)" }}
@@ -139,7 +139,7 @@ export default function ProfilePage() {
                     onChange={handleImageChange}
                     disabled={isUploading}
                   />
-                </Label>
+                </FormFieldLabel>
               </div>
               
               <h3 className="mt-4 font-semibold text-lg" style={{ color: "var(--text-primary)" }}>{profile?.name}</h3>
@@ -173,7 +173,7 @@ export default function ProfilePage() {
               <CardContent className="pt-6 space-y-5">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div className="space-y-1.5">
-                    <Label htmlFor="name" className="font-medium" style={{ color: "var(--text-secondary)" }}>Full Name</Label>
+                    <FormFieldLabel htmlFor="name">Full Name</FormFieldLabel>
                     <div className="relative">
                       <User className="absolute left-3 top-2.5 h-4 w-4" style={{ color: "var(--text-muted)" }} />
                       <Input 
@@ -187,7 +187,7 @@ export default function ProfilePage() {
                     </div>
                   </div>
                   <div className="space-y-1.5">
-                    <Label htmlFor="phone" className="font-medium" style={{ color: "var(--text-secondary)" }}>Phone Number</Label>
+                    <FormFieldLabel htmlFor="phone">Phone Number</FormFieldLabel>
                     <div className="relative">
                       <Phone className="absolute left-3 top-2.5 h-4 w-4" style={{ color: "var(--text-muted)" }} />
                       <Input 
@@ -203,7 +203,7 @@ export default function ProfilePage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="email" className="font-medium" style={{ color: "var(--text-secondary)" }}>Email Address</Label>
+                  <FormFieldLabel htmlFor="email">Email Address</FormFieldLabel>
                   <div className="relative">
                     <Mail className="absolute left-3 top-2.5 h-4 w-4" style={{ color: "var(--text-muted)" }} />
                     <Input 
@@ -257,7 +257,7 @@ export default function ProfilePage() {
               <CardContent className="pt-6">
                 <form onSubmit={handleChangePassword} className="space-y-4">
                   <div className="space-y-1.5">
-                    <Label htmlFor="oldPassword">Current Password</Label>
+                    <FormFieldLabel htmlFor="oldPassword">Current Password</FormFieldLabel>
                     <div className="relative">
                       <Lock className="absolute left-3 top-2.5 h-4 w-4" style={{ color: "var(--text-muted)" }} />
                       <Input 
@@ -282,7 +282,7 @@ export default function ProfilePage() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                     <div className="space-y-1.5">
-                      <Label htmlFor="newPassword">New Password</Label>
+                      <FormFieldLabel htmlFor="newPassword">New Password</FormFieldLabel>
                       <div className="relative">
                         <Lock className="absolute left-3 top-2.5 h-4 w-4" style={{ color: "var(--text-muted)" }} />
                         <Input 
@@ -305,7 +305,7 @@ export default function ProfilePage() {
                       </div>
                     </div>
                     <div className="space-y-1.5">
-                      <Label htmlFor="confirmPassword">Confirm Password</Label>
+                      <FormFieldLabel htmlFor="confirmPassword">Confirm Password</FormFieldLabel>
                       <div className="relative">
                         <Lock className="absolute left-3 top-2.5 h-4 w-4" style={{ color: "var(--text-muted)" }} />
                         <Input 

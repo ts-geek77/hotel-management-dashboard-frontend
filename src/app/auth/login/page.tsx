@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { FormFieldLabel } from "@/components/ui/form-field";
 import { Card, CardContent } from "@/components/ui/card";
 import { useForm } from "@/hooks";
 import { Building2, Loader2 } from "lucide-react";
@@ -75,7 +75,7 @@ const LoginPage = () => {
               )}
 
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="email">Email</Label>
+                <FormFieldLabel htmlFor="email">Email</FormFieldLabel>
                 <Input
                   id="email"
                   type="email"
@@ -98,7 +98,7 @@ const LoginPage = () => {
 
               <div className="flex flex-col gap-1.5">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="password">Password</Label>
+                  <FormFieldLabel htmlFor="password">Password</FormFieldLabel>
                   <Link
                     href="/auth/forgot-password"
                     className="text-xs hover:underline transition-colors"

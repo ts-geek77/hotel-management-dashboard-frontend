@@ -27,7 +27,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { FormFieldLabel } from "@/components/ui/form-field";
 import { DialogFooter } from "@/components/ui/dialog";
 
 export default function GuestsPage() {
@@ -205,7 +205,7 @@ export default function GuestsPage() {
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="space-y-1.5">
-              <Label style={{ color: "var(--text-secondary)" }}>Name</Label>
+              <FormFieldLabel>Name</FormFieldLabel>
               <Input
                 placeholder="e.g. John Doe"
                 value={addForm.name}
@@ -213,7 +213,7 @@ export default function GuestsPage() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label style={{ color: "var(--text-secondary)" }}>Email Address</Label>
+              <FormFieldLabel>Email Address</FormFieldLabel>
               <Input
                 type="email"
                 placeholder="e.g. john@example.com"
@@ -222,7 +222,7 @@ export default function GuestsPage() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label style={{ color: "var(--text-secondary)" }}>Phone Number</Label>
+              <FormFieldLabel>Phone Number</FormFieldLabel>
               <Input
                 type="tel"
                 placeholder="e.g. +1 555-0123"

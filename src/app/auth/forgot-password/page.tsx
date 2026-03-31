@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { FormFieldLabel } from "@/components/ui/form-field";
 import { Card, CardContent } from "@/components/ui/card";
 import { useForm } from "@/hooks";
 import { Building2, Loader2, ArrowLeft } from "lucide-react";
@@ -86,7 +86,7 @@ const ForgotPasswordPage = () => {
               )}
 
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="email">Email Address</Label>
+                <FormFieldLabel htmlFor="email">Email Address</FormFieldLabel>
                 <Input
                   id="email"
                   type="email"
@@ -108,7 +108,7 @@ const ForgotPasswordPage = () => {
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="newPassword">New Password</Label>
+                <FormFieldLabel htmlFor="newPassword">New Password</FormFieldLabel>
                 <Input
                   id="newPassword"
                   type="password"
@@ -130,7 +130,7 @@ const ForgotPasswordPage = () => {
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <FormFieldLabel htmlFor="confirmPassword">Confirm Password</FormFieldLabel>
                 <Input
                   id="confirmPassword"
                   type="password"

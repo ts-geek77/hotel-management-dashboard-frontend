@@ -17,7 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { FormFieldLabel, FormFieldSelect } from "@/components/ui/form-field";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -44,13 +44,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 export default function RoomsPage() {
   const {
@@ -224,24 +217,22 @@ export default function RoomsPage() {
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="space-y-1.5">
-              <Label style={{ color: "var(--text-secondary)" }}>Room Number</Label>
+              <FormFieldLabel>Room Number</FormFieldLabel>
               <Input
                 placeholder="e.g. 101"
                 value={addForm.roomNumber}
                 onChange={(e) => setAddForm((f) => ({ ...f, roomNumber: e.target.value }))}
               />
             </div>
+            <FormFieldSelect
+              label="Room Type"
+              value={addForm.roomType}
+              onValueChange={(v) => setAddForm((f) => ({ ...f, roomType: v }))}
+              options={ROOM_TYPES.map((t) => ({ value: t, label: t }))}
+              className="space-y-1.5"
+            />
             <div className="space-y-1.5">
-              <Label style={{ color: "var(--text-secondary)" }}>Room Type</Label>
-              <Select value={addForm.roomType} onValueChange={(v) => setAddForm((f) => ({ ...f, roomType: v }))}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {ROOM_TYPES.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1.5">
-              <Label style={{ color: "var(--text-secondary)" }}>Price per Night ($)</Label>
+              <FormFieldLabel>Price per Night ($)</FormFieldLabel>
               <Input
                 type="number"
                 placeholder="e.g. 120"
@@ -249,15 +240,13 @@ export default function RoomsPage() {
                 onChange={(e) => setAddForm((f) => ({ ...f, price: Number(e.target.value) }))}
               />
             </div>
-            <div className="space-y-1.5">
-              <Label style={{ color: "var(--text-secondary)" }}>Status</Label>
-              <Select value={addForm.status ?? "Available"} onValueChange={(v) => setAddForm((f) => ({ ...f, status: v as Room["status"] }))}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {ROOM_STATUSES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
+            <FormFieldSelect
+              label="Status"
+              value={addForm.status ?? "Available"}
+              onValueChange={(v) => setAddForm((f) => ({ ...f, status: v as Room["status"] }))}
+              options={ROOM_STATUSES.map((s) => ({ value: s, label: s }))}
+              className="space-y-1.5"
+            />
           </div>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setAddOpen(false)} disabled={saving}>Cancel</Button>
@@ -275,38 +264,34 @@ export default function RoomsPage() {
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="space-y-1.5">
-              <Label style={{ color: "var(--text-secondary)" }}>Room Number</Label>
+              <FormFieldLabel>Room Number</FormFieldLabel>
               <Input
                 value={editForm.roomNumber ?? ""}
                 onChange={(e) => setEditForm((f) => ({ ...f, roomNumber: e.target.value }))}
               />
             </div>
+            <FormFieldSelect
+              label="Room Type"
+              value={editForm.roomType ?? ""}
+              onValueChange={(v) => setEditForm((f) => ({ ...f, roomType: v }))}
+              options={ROOM_TYPES.map((t) => ({ value: t, label: t }))}
+              className="space-y-1.5"
+            />
             <div className="space-y-1.5">
-              <Label style={{ color: "var(--text-secondary)" }}>Room Type</Label>
-              <Select value={editForm.roomType ?? ""} onValueChange={(v) => setEditForm((f) => ({ ...f, roomType: v }))}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {ROOM_TYPES.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1.5">
-              <Label style={{ color: "var(--text-secondary)" }}>Price per Night ($)</Label>
+              <FormFieldLabel>Price per Night ($)</FormFieldLabel>
               <Input
                 type="number"
                 value={editForm.price ?? ""}
                 onChange={(e) => setEditForm((f) => ({ ...f, price: Number(e.target.value) }))}
               />
             </div>
-            <div className="space-y-1.5">
-              <Label style={{ color: "var(--text-secondary)" }}>Status</Label>
-              <Select value={editForm.status ?? ""} onValueChange={(v) => setEditForm((f) => ({ ...f, status: v as Room["status"] }))}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {ROOM_STATUSES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
+            <FormFieldSelect
+              label="Status"
+              value={editForm.status ?? ""}
+              onValueChange={(v) => setEditForm((f) => ({ ...f, status: v as Room["status"] }))}
+              options={ROOM_STATUSES.map((s) => ({ value: s, label: s }))}
+              className="space-y-1.5"
+            />
           </div>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setEditOpen(false)} disabled={saving}>Cancel</Button>

@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { FormFieldLabel } from "@/components/ui/form-field";
 import { Card, CardContent } from "@/components/ui/card";
 import { useForm } from "@/hooks";
 import { Building2, Loader2 } from "lucide-react";
@@ -77,7 +77,7 @@ const RegisterPage = () => {
               )}
 
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="name">Full Name</Label>
+                <FormFieldLabel htmlFor="name">Full Name</FormFieldLabel>
                 <Input
                   id="name"
                   type="text"
@@ -94,7 +94,7 @@ const RegisterPage = () => {
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="email">Email</Label>
+                <FormFieldLabel htmlFor="email">Email</FormFieldLabel>
                 <Input
                   id="email"
                   type="email"
@@ -112,7 +112,7 @@ const RegisterPage = () => {
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="phone">Phone Number</Label>
+                <FormFieldLabel htmlFor="phone">Phone Number</FormFieldLabel>
                 <Input
                   id="phone"
                   type="tel"
@@ -129,7 +129,7 @@ const RegisterPage = () => {
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="password">Password</Label>
+                <FormFieldLabel htmlFor="password">Password</FormFieldLabel>
                 <Input
                   id="password"
                   type="password"
@@ -147,7 +147,7 @@ const RegisterPage = () => {
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <FormFieldLabel htmlFor="confirmPassword">Confirm Password</FormFieldLabel>
                 <Input
                   id="confirmPassword"
                   type="password"
